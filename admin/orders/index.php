@@ -10,14 +10,14 @@
         <div class="container-fluid">
 			<table class="table table-hover table-striped">
 				<colgroup>
-					<col width="5%">
+					<col width="10%">
 					<col width="15%">
-					<col width="15%">
+					<col width="20%">
 					<col width="20%">
 					<col width="10%">
 					<col width="15%">
 					<col width="10%">
-					<col width="10%">
+
 				</colgroup>
 				<thead>
                 <tr class="bg-navy disabled">
@@ -39,11 +39,11 @@
 					?>
 						<tr>
 							<td class="text-center"><?php echo $row['id']; ?></td>
-							<td class=""><?php echo $row['item_id']; ?></td>
-							<td class=""><?php echo $row['item_name'] ?></td>
-							<td class=""><?php echo $row['total_price'] ?></td>
-							<td class="text-right"><?php echo number_format($row['Stock']) ?></td>
-							<td>
+							<td class="text-center"><?php echo $row['item_id']; ?></td>
+							<td class="text-center"><?php echo $row['item_name'] ?></td>
+							<td class="text-center"><?php echo number_format($row['total_price']) ?></td>
+							<td class="text-center"><?php echo number_format($row['Stock']) ?></td>
+							<td class="text-center">
 								<?php 
 									if($row['Stock'] <= 5 ){
                                         echo '<span class="badge badge-danger">Restock</span>';
@@ -60,7 +60,7 @@
 				                  <div class="dropdown-menu" role="menu">
 								  	<a class="dropdown-item" href="?page=orders/view_orders&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-primary"></span> View</a>
 				                    <div class="dropdown-divider"></div>
-				                    <a class="dropdown-item" href="?page=purchase_orders/manage_po&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
+				                    <a class="dropdown-item" href="?page=orders/manage_orders&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
 				                    <div class="dropdown-divider"></div>
 				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-trash text-danger"></span> Delete</a>
 				                  </div>
