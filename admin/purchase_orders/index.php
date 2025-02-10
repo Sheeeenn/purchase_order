@@ -27,7 +27,10 @@
 				<thead>
 					<tr class="bg-navy disabled">
 						<th>#</th>
-						<th>Date Created</th>
+						<th>Date of Request</th>
+                        <th>Date of Purchase</th>
+                        <th>Date Recieved</th>
+                        <th>Requestor's Name</th>
 						<th>Reference #</th>
 						<th>Supplier</th>
 						<th>Items</th>
