@@ -29,11 +29,11 @@
 						<th>#</th>
 						<th>Date of Request</th>
                         <th>Date of Purchase</th>
-                        <th>Date Recieved</th>
-                        <th>Requestor's Name</th>
+                        <th>Detachment</th>
+                        <th>Supplier</th>
 						<th>Reference #</th>
-						<th>Supplier</th>
-						<th>Items</th>
+						<th>Date Received</th>
+						<th>Stock</th>
 						<th>Total Amount</th>
 						<th>Status</th>
 						<th>Action</th>
