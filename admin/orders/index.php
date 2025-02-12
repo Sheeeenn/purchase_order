@@ -1,3 +1,23 @@
+<?php
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
+    $id = intval($_POST['id']);
+
+    $qry = $conn->query("DELETE FROM inventory WHERE id = $id");
+
+    if ($qry) {
+        echo "<script>window.location.href = '?page=orders';</script>";
+        exit();
+    } else {
+        echo "<script>window.location.href = '?page=orders';</script>";
+        exit();
+    }
+}
+
+?>
+
+
+
 <div class="card card-outline card-primary">
 	<div class="card-header">
 		<h3 class="card-title">List of Orders</h3>
@@ -62,7 +82,12 @@
 				                    <div class="dropdown-divider"></div>
 				                    <a class="dropdown-item" href="?page=orders/manage_orders&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
 				                    <div class="dropdown-divider"></div>
-				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-trash text-danger"></span> Delete</a>
+				                    <form method="POST" action="" style="display: inline;">
+                                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                        <button type="submit" class="dropdown-item delete_data" onclick="return confirm('Are you sure you want to delete this item?');">
+                                            <span class="fa fa-trash text-danger"></span> Delete
+                                        </button>
+                                    </form>
 				                  </div>
 							</td>
 						</tr>
@@ -73,13 +98,15 @@
 		</div>
 	</div>
 </div>
+
+
 <script>
 	$(document).ready(function(){
 		$('.delete_data').click(function(){
 			_conf("Are you sure to delete this rent permanently?","delete_rent",[$(this).attr('data-id')])
 		})
 		$('.view_details').click(function(){
-			uni_modal("Reservaton Details","purchase_orders/view_details.php?id="+$(this).attr('data-id'),'mid-large')
+			uni_modal("Reservaton Details","orders/view_details.php?id="+$(this).attr('data-id'),'mid-large')
 		})
 		$('.renew_data').click(function(){
 			_conf("Are you sure to renew this rent data?","renew_rent",[$(this).attr('data-id')]);
