@@ -1,8 +1,21 @@
-<?php if($_settings->chk_flashdata('success')): ?>
-<script>
-	alert_toast("<?php echo $_settings->flashdata('success') ?>",'success')
-</script>
-<?php endif;?>
+<?php
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
+    $id = intval($_POST['id']);
+
+    $qry = $conn->query("DELETE FROM purchase_list WHERE id = $id");
+
+    if ($qry) {
+        echo "<script>window.location.href = '?page=purchase_orders';</script>";
+        exit();
+    } else {
+        echo "<script>window.location.href = '?page=purchase_orders';</script>";
+        exit();
+    }
+}
+
+?>
+
 <div class="card card-outline card-primary">
 	<div class="card-header">
 		<h3 class="card-title">List of Purchase Orders</h3>
@@ -89,8 +102,13 @@
 				                    <div class="dropdown-divider"></div>
 				                    <a class="dropdown-item" href="?page=purchase_orders/manage_po&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
 				                    <div class="dropdown-divider"></div>
-				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-trash text-danger"></span> Delete</a>
-				                  </div>
+				                    <form method="POST" action="" style="display: inline;">
+                                        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                        <button type="submit" class="dropdown-item delete_data" onclick="return confirm('Are you sure you want to delete this item?');">
+                                            <span class="fa fa-trash text-danger"></span> Delete
+                                        </button>
+                                    </form>
+                                </div>
 							</td>
 						</tr>
 					<?php endwhile; ?>

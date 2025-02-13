@@ -71,7 +71,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 				</div>
 				<div class="col-6">
                     <p  class="m-0"><b>Reference #:</b></p>
-                    <p style="font-size: 22px;"><b><?php echo $reference_id ?></b></p>
+                    <p style="font-size: 22px;"><b><?php echo isset($reference_id) ? $reference_id : "REF-000000000"?></b></p>
                 </div>
 			</div>
 			<div class="row">
@@ -96,61 +96,81 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							</tr>
 						</thead>
 						<tbody>
-							<?php 
-							if(isset($id)):
-							$order_items_qry = $conn->query("SELECT * from purchase_list where id = $id");
-                            $sub_total = 0;
-							echo $conn->error;
-							while($row = $order_items_qry->fetch_assoc()):
+                        <?php 
+                        $sub_total = 0;
+                        $order_items = []; // Default empty array
+
+                        if (!empty($id)) {
+                            $order_items_qry = $conn->query("SELECT * FROM purchase_list WHERE id = $id");
+                            echo $conn->error;
+
+                            while ($row = $order_items_qry->fetch_assoc()) {
+                                $order_items[] = $row; // Store results in array
                                 $sub_total += ($row['quantity'] * $row['amount_requested']);
-							?>
-							<tr class="po-item" data-id="">
-								<td class="align-middle p-0 text-center">
-									<input type="number" class="text-center w-100 border-0" step="any" name="quantity" value="<?php echo $row['quantity'] ?>"/>
-								</td>
-								<td class="align-middle p-1">
-									<input type="text" class="text-center w-100 border-0" name="requestor_name" value="<?php echo $row['requestor_name'] ?>"/>
-								</td>
-								<td class="align-middle p-1">
-                                <select name="item_id" id="item_id" class="custom-select custom-select-sm rounded-0 select2">
-                                    <?php 
-                                        $selected_item = "Select an Item";
-                                        $selected_item_id = "";
-                                        if (isset($item_id)) {
-                                            $item_qry = $conn->query("SELECT * FROM item_list WHERE id = '{$item_id}'");
-                                            if ($item_qry->num_rows > 0) {
-                                                $item = $item_qry->fetch_array();
-                                                $selected_item = $item['name'];
-                                                $selected_item_id = $item['id'];
-                                            }
-                                        }
-                                    ?>
-                                    <option value="<?php echo $selected_item_id; ?>" selected><?php echo $selected_item; ?></option>
-                                    <?php 
-                                        $item_qry = $conn->query("SELECT * FROM `item_list` ORDER BY `name` ASC");
-                                        while($row2 = $item_qry->fetch_assoc()):
-                                    ?>
-                                    <option value="<?php echo $row2['id']; ?>" <?php echo (isset($item_id) && $item_id == $row2['id']) ? 'selected' : ''; ?>>
-                                        <?php echo $row2['name']; ?>
-                                    </option>
-                                    <?php endwhile; ?>
-                                </select>
-								</td>
-								<td class="align-middle p-1 item-description">
-                                    <input type="text" class="text-center w-100 border-0" name="detachment" value="<?php echo $row['detachment']?>"/>
+                            }
+                        }
+
+                        // If no results (or no ID), include at least one blank row
+                        if (empty($order_items)) {
+                            $order_items[] = [
+                                'quantity' => '',
+                                'requestor_name' => '',
+                                'detachment' => '',
+                                'amount_requested' => '',
+                                'item_id' => '',
+                            ];
+                        }
+
+                        foreach ($order_items as $row): ?>
+                            <tr class="po-item" data-id="">
+                                <td class="align-middle p-0 text-center">
+                                    <input type="number" class="text-center w-100 border-0" step="any" name="quantity" value="<?php echo htmlspecialchars($row['quantity']) ?>"/>
                                 </td>
-								<td class="align-middle p-1">
-									<input type="number" step="any" class="text-right w-100 border-0" name="amount_requested"  value="<?php echo ($row['amount_requested']) ?>"/>
-								</td>
-								<td class="align-middle p-1 text-right total-price"><?php echo number_format($row['quantity'] * $row['amount_requested']) ?></td>
-							</tr>
-							<?php endwhile;endif; ?>
+                                <td class="align-middle p-1">
+                                    <input type="text" class="text-center w-100 border-0" name="requestor_name" value="<?php echo htmlspecialchars($row['requestor_name']) ?>"/>
+                                </td>
+                                <td class="align-middle p-1">
+                                    <select name="item_id" id="item_id" class="custom-select custom-select-sm rounded-0 select2">
+                                        <?php 
+                                            $selected_item = "Select an Item";
+                                            $selected_item_id = $row['item_id'] ?? '';
+
+                                            if (!empty($selected_item_id)) {
+                                                $item_qry = $conn->query("SELECT * FROM item_list WHERE id = '{$selected_item_id}'");
+                                                if ($item_qry->num_rows > 0) {
+                                                    $item = $item_qry->fetch_array();
+                                                    $selected_item = $item['name'];
+                                                }
+                                            }
+                                        ?>
+                                        <option value="<?php echo htmlspecialchars($selected_item_id); ?>" selected><?php echo $selected_item; ?></option>
+                                        <?php 
+                                            $item_qry = $conn->query("SELECT * FROM `item_list` ORDER BY `name` ASC");
+                                            while($row2 = $item_qry->fetch_assoc()):
+                                        ?>
+                                        <option value="<?php echo $row2['id']; ?>" <?php echo (!empty($selected_item_id) && $selected_item_id == $row2['id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($row2['name']); ?>
+                                        </option>
+                                        <?php endwhile; ?>
+                                    </select>
+                                </td>
+                                <td class="align-middle p-1 item-description">
+                                    <input type="text" class="text-center w-100 border-0" name="detachment" value="<?php echo htmlspecialchars($row['detachment']) ?>"/>
+                                </td>
+                                <td class="align-middle p-1">
+                                    <input type="number" step="any" class="text-right w-100 border-0" name="amount_requested" value="<?php echo htmlspecialchars($row['amount_requested']) ?>"/>
+                                </td>
+                                <td class="align-middle p-1 text-right total-price">
+                                    <?php echo number_format((float)$row['quantity'] * (float)$row['amount_requested'], 2); ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
 						</tbody>
 						<tfoot>
 							<tr class="bg-lightblue">
                                 <tr>
                                     <th class="p-1 text-right" colspan="5">Sub Total</th>
-                                    <th class="p-1 text-right" id="sub_total"><?php echo number_format($sub_total) ?></th>
+                                    <th class="p-1 text-right" id="sub_total"><?php echo isset($sub_total) ? number_format($sub_total) : 0 ?></th>
                                 </tr>
 								<tr>
 									<th class="p-1 text-right" colspan="5">Discount (%)
@@ -175,7 +195,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                         <div class="col-6">
                             <p class="m-0"><b>Received by:</b></p>
                             <div>
-                                <input type="text" class="text-center w-100 form-control rounded-0" name="received_by" value="<?php echo $received_by?>"/>
+                                <input type="text" class="text-center w-100 form-control rounded-0" name="received_by" value="<?php echo isset($received_by) ? $received_by : ""?>"/>
                             </div>
                         </div>
                         <div class="col-6 row">
@@ -219,6 +239,43 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 	</div>
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    function calculateTotals() {
+        let subTotal = 0;
+        
+        document.querySelectorAll("#item-list tbody tr").forEach(row => {
+            let qty = parseFloat(row.querySelector("input[name='quantity']").value) || 0;
+            let amountRequested = parseFloat(row.querySelector("input[name='amount_requested']").value) || 0;
+            let total = qty * amountRequested;
+            subTotal += total;
+            
+            row.querySelector(".total-price").textContent = total.toFixed(2);
+        });
+        
+        document.getElementById("sub_total").textContent = subTotal.toFixed(2);
+
+        let discountPercentage = parseFloat(document.querySelector("input[name='discount_percentage']").value) || 0;
+        let discountAmount = (subTotal * discountPercentage) / 100;
+        document.querySelector("input[name='discount_amount']").value = discountAmount.toFixed(2);
+
+        let taxPercentage = parseFloat(document.querySelector("input[name='tax_percentage']").value) || 0;
+        let taxAmount = ((subTotal - discountAmount) * taxPercentage) / 100;
+        document.querySelector("input[name='tax_amount']").value = taxAmount.toFixed(2);
+
+        let totalAmount = subTotal - discountAmount + taxAmount;
+        document.querySelector("input[name='total_amount']").value = totalAmount.toFixed(2);
+    }
+
+    document.querySelectorAll("input[name='quantity'], input[name='amount_requested'], input[name='discount_percentage'], input[name='tax_percentage']").forEach(input => {
+        input.addEventListener("input", calculateTotals);
+    });
+
+    calculateTotals(); // Initial Calculation on page load
+});
+
+</script>
+
 <?php
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -245,18 +302,65 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!empty($id)) {
         // Update the existing purchase
-        $update_query = "UPDATE purchase_list SET supplier_id='$supplier_id', item_id='$item_id', quantity='$quantity', discount_percentage='$discount_percentage', discount_amount='$discount_amount', tax_percentage='$tax_percentage', tax_amount='$tax_amount', detachment='$detachment', requestor_name='$requestor_name', received_by='$received_by', amount_requested='$amount_requested', total_amount='$total_amount', date_purchase='$date_purchase', date_recieved='$date_received', notes='$notes', status='$status' WHERE id='$id'";
+        $update_query = "UPDATE purchase_list SET 
+            supplier_id = '$supplier_id',
+            item_id = '$item_id',
+            quantity = '$quantity',
+            discount_percentage = '$discount_percentage',
+            discount_amount = '$discount_amount',
+            tax_percentage = '$tax_percentage',
+            tax_amount = '$tax_amount',
+            detachment = '$detachment',
+            requestor_name = '$requestor_name',
+            received_by = '$received_by',
+            amount_requested = '$amount_requested',
+            total_amount = '$total_amount',
+            date_purchase = '$date_purchase',
+            date_recieved = '$date_received',
+            notes = '$notes',
+            status = '$status'
+        WHERE id = '$id'";
+
+
         if ($conn->query($update_query)) {
             $purchase_id = $id;
         }
     } else {
+        // Generate a unique reference ID
+        $range = mt_rand(100000000, 999999999);
+        $ref = "REF-" . $range;
+    
         // Insert a new purchase
-        $insert_query = "INSERT INTO purchase_list (supplier_id, received_by, date_purchase, date_recieved, notes, status, discount_percentage, tax_percentage, discount_amount, tax_amount) VALUES ('$supplier_id', '$received_by', '$date_purchase', '$date_received', '$notes', '$status', '$discount_percentage', '$tax_percentage', '$discount_amount', '$tax_amount')";
+        $insert_query = "INSERT INTO purchase_list (reference_id, supplier_id, item_id, quantity, discount_percentage, discount_amount, tax_percentage, tax_amount, detachment, requestor_name, received_by, amount_requested, total_amount, date_purchase, date_recieved, notes, status) 
+        VALUES ('$ref', '$supplier_id', '$item_id', '$quantity', '$discount_percentage', '$discount_amount', '$tax_percentage', '$tax_amount', '$detachment', '$requestor_name', '$received_by', '$amount_requested', '$total_amount', '$date_purchase', '$date_received', '$notes', '$status')";
+    
         if ($conn->query($insert_query)) {
             $purchase_id = $conn->insert_id;
+    
+            // Check if item_id exists in inventory
+            $check_query = "SELECT * FROM inventory WHERE item_id = '$item_id'";
+            $result = $conn->query($check_query);
+    
+            if ($result->num_rows > 0) {
+                // Item exists, update Stock and total_price
+                $update_inventory_query = "UPDATE inventory 
+                                           SET Stock = Stock + '$quantity', 
+                                               total_price = total_price + '$total_amount' 
+                                           WHERE item_id = '$item_id'";
+                $conn->query($update_inventory_query);
+            } else {
+                // Item does not exist, insert new inventory record
+                $get_item_name = $conn->query("SELECT name FROM item_list WHERE id = '$item_id'");
+                $item_name_row = $get_item_name->fetch_assoc();
+                $item_name = $item_name_row['name'];
+    
+                $insert_inventory_query = "INSERT INTO inventory (item_id, item_name, total_price, Stock) 
+                                           VALUES ('$item_id', '$item_name', '$total_amount', '$quantity')";
+                $conn->query($insert_inventory_query);
+            }
         }
     }
-
+    
     echo "<script>alert('Purchase order saved successfully!'); window.location.href='?page=purchase_orders/view_po&id=$purchase_id';</script>";
 }
 ?>
