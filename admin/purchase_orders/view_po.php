@@ -5,7 +5,7 @@
 <?php endif;?>
 <?php
 if(isset($_GET['id']) && $_GET['id'] > 0){
-    $qry = $conn->query("SELECT * from `po_list` where id = '{$_GET['id']}' ");
+    $qry = $conn->query("SELECT * from purchase_list where id = '{$_GET['id']}' ");
     if($qry->num_rows > 0){
         foreach($qry->fetch_assoc() as $k => $v){
             $$k=$v;
@@ -40,7 +40,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 </style>
 <div class="card card-outline card-info">
 	<div class="card-header">
-		<h3 class="card-title"><?php echo isset($id) ? "Update Purchase Order Details": "New Purchase Order" ?> </h3>
+		<h3 class="card-title"><?php echo isset($id) ? "Purchase Order Details": "New Purchase Order" ?> </h3>
         <div class="card-tools">
             <button class="btn btn-sm btn-flat btn-success" id="print" type="button"><i class="fa fa-print"></i> Print</button>
 		    <a class="btn btn-sm btn-flat btn-primary" href="?page=purchase_orders/manage_po&id=<?php echo $id ?>">Edit</a>
@@ -63,13 +63,13 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
         </div>
         <div class="row mb-2">
             <div class="col-6">
-                <p class="m-0"><b>Vendor</b></p>
+                <p class="m-0"><b>Vendor:</b></p>
                 <?php 
                 $sup_qry = $conn->query("SELECT * FROM supplier_list where id = '{$supplier_id}'");
                 $supplier = $sup_qry->fetch_array();
                 ?>
                 <div>
-                    <p class="m-0"><?php echo $supplier['name'] ?></p>
+                    <p class="m-0" style="font-size: 18px;"><b><?php echo $supplier['name'] ?></b></p>
                     <p class="m-0"><?php echo $supplier['address'] ?></p>
                     <p class="m-0"><?php echo $supplier['contact_person'] ?></p>
                     <p class="m-0"><?php echo $supplier['contact'] ?></p>
@@ -79,14 +79,15 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             <div class="col-6 row">
                 <div class="col-6">
                     <p  class="m-0"><b>Reference #:</b></p>
-                    <p><b><?php echo $po_no ?></b></p>
+                    <p style="font-size: 22px;"><b><?php echo $reference_id ?></b></p>
                 </div>
                 <div class="col-6">
-                    <p  class="m-0"><b>Date Created</b></p>
-                    <p><b><?php echo date("Y-m-d",strtotime($date_created)) ?></b></p>
+                    <p  class="m-0"><b>Date Created:</b></p>
+                    <p style="font-size: 22px;"><b><?php echo date("Y-m-d",strtotime($date_request)) ?></b></p>
                 </div>
             </div>
         </div>
+        
         <div class="row">
             <div class="col-md-12">
                 <table class="table table-striped table-bordered" id="item-list">
@@ -101,28 +102,32 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                     <thead>
                         <tr class="bg-navy disabled" style="">
                             <th class="bg-navy disabled text-light px-1 py-1 text-center">Qty</th>
-                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Unit</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Req Name</th>
                             <th class="bg-navy disabled text-light px-1 py-1 text-center">Item</th>
-                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Description</th>
-                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Price</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Detachment</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Amount Requested</th>
                             <th class="bg-navy disabled text-light px-1 py-1 text-center">Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php 
                         if(isset($id)):
-                        $order_items_qry = $conn->query("SELECT o.*,i.name, i.description FROM `order_items` o inner join item_list i on o.item_id = i.id where o.`po_id` = '$id' ");
+                        $order_items_qry = $conn->query("SELECT * from purchase_list where id = $id");
                         $sub_total = 0;
                         while($row = $order_items_qry->fetch_assoc()):
-                            $sub_total += ($row['quantity'] * $row['unit_price']);
+                            $sub_total += ($row['quantity'] * $row['amount_requested']);
                         ?>
                         <tr class="po-item" data-id="">
                             <td class="align-middle p-0 text-center"><?php echo $row['quantity'] ?></td>
-                            <td class="align-middle p-1"><?php echo $row['unit'] ?></td>
-                            <td class="align-middle p-1"><?php echo $row['name'] ?></td>
-                            <td class="align-middle p-1 item-description"><?php echo $row['description'] ?></td>
-                            <td class="align-middle p-1"><?php echo number_format($row['unit_price']) ?></td>
-                            <td class="align-middle p-1 text-right total-price"><?php echo number_format($row['quantity'] * $row['unit_price']) ?></td>
+                            <td class="align-middle p-1"><?php echo $row['requestor_name'] ?></td>
+                            <td class="align-middle p-1"><?php 
+                                $query = $conn->query("SELECT name FROM item_list WHERE id = '{$row['item_id']}'"); 
+                                $result = $query->fetch_assoc();
+                                echo $result['name'] ?? 'N/A';
+                                ?></td>
+                            <td class="align-middle p-1 item-description"><?php echo $row['detachment'] ?></td>
+                            <td class="align-middle p-1"><?php echo number_format($row['amount_requested']) ?></td>
+                            <td class="align-middle p-1 text-right total-price"><?php echo number_format($row['quantity'] * $row['amount_requested']) ?></td>
                         </tr>
                         <?php endwhile;endif; ?>
                     </tbody>
@@ -148,6 +153,32 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                         </tr>
                     </tfoot>
                 </table>
+                <div class="row mb-2">
+            <div class="col-6">
+                <p class="m-0"><b>Received by:</b></p>
+                <div>
+                    <p class="m-0" style="font-size: 20px;"><b><?php echo $received_by ?></b></p>
+                </div>
+            </div>
+            <div class="col-6 row">
+                <div class="col-6">
+                    <p  class="m-0"><b>Date of Purchase:</b></p>
+                    <p style="font-size: 20px;"><b><?php 
+                    echo ($date_purchase == "0000-00-00" || empty($date_purchase)) 
+                        ? 'N/A' 
+                        : date("Y-m-d", strtotime($date_purchase)); 
+                    ?></b></p>
+                </div>
+                <div class="col-6">
+                    <p  class="m-0"><b>Date Received:</b></p>
+                    <p style="font-size: 20px;"><b><?php 
+                    echo ($date_recieved == "0000-00-00" || empty($date_recieved)) 
+                        ? 'N/A' 
+                        : date("Y-m-d", strtotime($date_recieved)); 
+                    ?></b></p>
+                </div>
+            </div>
+        </div>
                 <div class="row">
                     <div class="col-6">
                         <label for="notes" class="control-label">Notes</label>

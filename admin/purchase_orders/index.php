@@ -15,27 +15,27 @@
         <div class="container-fluid">
 			<table class="table table-hover table-striped">
 				<colgroup>
+					<col width="5%"> 
+					<col width="15%">
+					<col width="10%">
+					<col width="15%">
 					<col width="5%">
-					<col width="10%">
-					<col width="15%">
-					<col width="15%">
+                    <col width="15">
 					<col width="15%">
 					<col width="10%">
 					<col width="10%">
-					<col width="10%">
-                    <col width="10%">
 				</colgroup>
 				<thead>
 					<tr class="bg-navy disabled">
-						<th>#</th>
-						<th>Reference ID</th>
-                        <th>Supplier</th>
-                        <th>Item</th>
-                        <th>Total Amount</th>
-						<th>Date of Request</th>
-						<th>Date Received</th>
-						<th>Status</th>
-						<th>Action</th>
+						<th class="text-center">#</th>
+						<th class="text-center">Reference ID</th>
+                        <th class="text-center">Supplier</th>
+                        <th class="text-center">Item</th>
+                        <th class="text-center">Quantity</th>
+                        <th class="text-center">Total Amount</th>
+						<th class="text-center">Date of Request</th>
+						<th class="text-center">Status</th>
+						<th class="text-center">Action</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -43,17 +43,28 @@
 					$i = 1;
 						$qry = $conn->query("SELECT * from purchase_list ");
 						while($row = $qry->fetch_assoc()):
-							$row['item_count'] = $conn->query("SELECT * FROM order_items where po_id = '{$row['id']}'")->num_rows;
-							$row['total_amount'] = $conn->query("SELECT sum(quantity * unit_price) as total FROM order_items where po_id = '{$row['id']}'")->fetch_array()['total'];
 					?>
 						<tr>
-							<td class="text-center"><?php echo $i++; ?></td>
-							<td class=""><?php echo date("M d,Y H:i",strtotime($row['date_created'])) ; ?></td>
-							<td class=""><?php echo $row['po_no'] ?></td>
-							<td class=""><?php echo $row['sname'] ?></td>
-							<td class="text-right"><?php echo number_format($row['item_count']) ?></td>
-							<td class="text-right"><?php echo number_format($row['total_amount']) ?></td>
-							<td>
+							<td class="text-center"><?php echo $row['id']; ?></td>
+							<td class="text-center"><?php echo $row['reference_id']; ?></td>
+							<td class="text-center">
+                                <?php 
+                                $query = $conn->query("SELECT name FROM supplier_list WHERE id = '{$row['supplier_id']}'"); 
+                                $result = $query->fetch_assoc();
+                                echo $result['name'] ?? 'N/A';
+                                ?>
+                            </td>
+							<td class="text-center">
+                                <?php 
+                                $query = $conn->query("SELECT name FROM item_list WHERE id = '{$row['item_id']}'"); 
+                                $result = $query->fetch_assoc();
+                                echo $result['name'] ?? 'N/A';
+                                ?>
+                            </td>
+                            <td class="text-center"><?php echo number_format($row['quantity']) ?></td>
+							<td class="text-center"><?php echo number_format($row['total_amount']) ?></td>
+							<td class="text-center"><?php echo date("M d,Y",strtotime($row['date_request'])) ; ?></td>
+							<td class="text-center">
 								<?php 
 									switch ($row['status']) {
 										case '1':
