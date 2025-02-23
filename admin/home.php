@@ -6,7 +6,7 @@
               <span class="info-box-icon bg-navy elevation-1"><i class="fas fa-truck-loading"></i></span>
 
               <div class="info-box-content">
-                <span class="info-box-text">Total Suppliers</span>
+                <span class="info-box-text">Total Suppliers </span>
                 <span class="info-box-number">
                   <?php 
                     $supplier = $conn->query("SELECT * FROM supplier_list")->num_rows;

@@ -17,9 +17,11 @@
 				<colgroup>
 					<col width="5%">
 					<col width="15%">
-					<col width="25%">
-					<col width="25%">
+                    <col width="10%">
 					<col width="15%">
+					<col width="15%">
+					<col width="15%">
+                    <col width="10%">
 					<col width="15%">
 				</colgroup>
 				<thead>
@@ -27,7 +29,9 @@
 						<th>#</th>
 						<th>Date Created</th>
 						<th>Item Name</th>
+                        <th>Item Code</th>
 						<th>Description</th>
+                        <th>Unit Price</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>

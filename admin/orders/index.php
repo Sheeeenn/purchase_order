@@ -30,10 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
         <div class="container-fluid">
 			<table class="table table-hover table-striped">
 				<colgroup>
-					<col width="10%">
+					<col width="5%">
 					<col width="15%">
 					<col width="20%">
-					<col width="20%">
+					<col width="15%">
+                    <col width="10%">
 					<col width="10%">
 					<col width="15%">
 					<col width="10%">
@@ -42,11 +43,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
 				<thead>
                 <tr class="bg-navy disabled">
 						<th>#</th>
-						<th>Item ID</th>
+						<th>Item No.</th>
 						<th>Item Name</th>
+                        <th>Item Code</th>
 						<th>Total Price</th>
 						<th>Stock</th>
 						<th>Remarks</th>
+                        <th>Unit of Measurement</th>
 						<th>Action</th>
 					</tr>
 				</thead>
