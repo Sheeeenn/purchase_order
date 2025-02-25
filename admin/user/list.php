@@ -45,7 +45,7 @@
 				<tbody>
 					<?php 
 					$i = 1;
-						$qry = $conn->query("SELECT *,concat(firstname,' ',lastname) as name from `users` where id != '1' and id != '{$_settings->userdata('id')}' and `type` != 3 order by concat(firstname,' ',lastname) asc ");
+						$qry = $conn->query("SELECT *,concat(firstname,' ',lastname) as name from `users` where id != '1' and id != '{$_settings->userdata('id')}' and `type` != 4 order by concat(firstname,' ',lastname) asc ");
 						while($row = $qry->fetch_assoc()):
 					?>
 						<tr>
@@ -53,7 +53,17 @@
 							<td class="text-center"><img src="<?php echo validate_image($row['avatar']) ?>" class="img-avatar img-thumbnail p-0 border-2" alt="user_avatar"></td>
 							<td><?php echo ucwords($row['name']) ?></td>
 							<td ><p class="m-0 truncate-1"><?php echo $row['username'] ?></p></td>
-							<td><?php echo ($row['type'] == 1) ? 'Administrator' : 'Staff' ?></td>
+							<td>
+                                <?php 
+                                    if ($row['type'] == 1) {
+                                        echo 'Administrator';
+                                    } elseif ($row['type'] == 2) {
+                                        echo 'Staff';
+                                    } elseif ($row['type'] == 3) {
+                                        echo 'Approver';
+                                    }                                        
+                                ?>
+                            </td>
 							<td align="center">
 								 <button type="button" class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
 				                  		Action

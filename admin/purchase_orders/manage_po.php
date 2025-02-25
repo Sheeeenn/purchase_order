@@ -220,15 +220,17 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 							<label for="notes" class="control-label">Notes</label>
 							<textarea name="notes" id="notes" cols="10" rows="4" class="form-control rounded-0"><?php echo isset($notes) ? $notes : '' ?></textarea>
 						</div>
-						<div class="col-md-6">
-							<label for="status" class="control-label">Status</label>
-							<select name="status" id="status" class="form-control form-control-sm rounded-0">
-								<option value="0" <?php echo isset($status) && $status == 0 ? 'selected': '' ?>>Pending</option>
-								<option value="1" <?php echo isset($status) && $status == 1 ? 'selected': '' ?>>Approved</option>
-								<option value="2" <?php echo isset($status) && $status == 2 ? 'selected': '' ?>>Denied</option>
-							</select>
-						</div>
-					</div>
+                        <?php if(isset($id)): ?>
+                            <div class="col-md-6">
+                                <label for="status" class="control-label">Status</label>
+                                <select name="status" id="status" class="form-control form-control-sm rounded-0" 
+                                    <?php echo ($_settings->userdata('type') != 3) ? 'disabled' : ''; ?>> 
+                                    <option value="0" <?php echo isset($status) && $status == 0 ? 'selected' : ''; ?>>Pending</option>
+                                    <option value="1" <?php echo isset($status) && $status == 1 ? 'selected' : ''; ?>>Approved</option>
+                                    <option value="2" <?php echo isset($status) && $status == 2 ? 'selected' : ''; ?>>Denied</option>
+                                </select>
+                            </div>
+                        <?php endif; ?>
 				</div>
 			</div>
 		</form>
@@ -286,7 +288,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $date_received = isset($_POST['date_recieved']) ? $_POST['date_recieved'] : null;
     $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
     $detachment = isset($_POST['detachment']) ? $_POST['detachment'] : '';
-    $status = isset($_POST['status']) ? $_POST['status'] : 0;
     $item_id = isset($_POST['item_id']) ? $_POST['item_id'] : 1;
     $quantity = isset($_POST['quantity']) ? $_POST['quantity'] : 1;
     $requestor_name = isset($_POST['requestor_name']) ? $_POST['requestor_name'] : '';
@@ -317,15 +318,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             total_amount = '$total_amount',
             date_purchase = '$date_purchase',
             date_recieved = '$date_received',
-            notes = '$notes',
-            status = '$status'
-        WHERE id = '$id'";
+            notes = '$notes'";
+
+        if (isset($_POST['status'])) {
+            $status = $_POST['status'];
+            $update_query .= ", status = '$status'";
+        }
+
+        $update_query .= " WHERE id = '$id'";
 
 
         if ($conn->query($update_query)) {
             $purchase_id = $id;
         }
     } else {
+        $status = isset($_POST['status']) ? $_POST['status'] : 0;
         // Generate a unique reference ID
         $range = mt_rand(100000000, 999999999);
         $ref = "REF-" . $range;
