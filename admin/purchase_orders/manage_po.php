@@ -193,7 +193,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 					</table>
                     <div class="row mb-2">
                         <div class="col-6">
-                            <p class="m-0"><b>Received by:</b></p>
+                            <p class="m-0"><b>Prepared by:</b></p>
                             <div>
                                 <input type="text" class="text-center w-100 form-control rounded-0" name="received_by" value="<?php echo isset($received_by) ? $received_by : ""?>"/>
                             </div>
@@ -335,7 +335,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $status = isset($_POST['status']) ? $_POST['status'] : 0;
         // Generate a unique reference ID
         $range = mt_rand(100000000, 999999999);
-        $ref = "REF-" . $range;
+        $ref = "AGF-PO" . $range;
     
         // Insert a new purchase
         $insert_query = "INSERT INTO purchase_list (reference_id, supplier_id, item_id, quantity, discount_percentage, discount_amount, tax_percentage, tax_amount, detachment, requestor_name, received_by, amount_requested, total_amount, date_purchase, date_recieved, notes, status) 

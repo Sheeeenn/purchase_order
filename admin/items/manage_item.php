@@ -32,7 +32,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             <label for="code" class="control-label">Item Code</label>
             <input type="text" name="code" id="code" class="form-control rounded-0" 
                 value="<?php echo isset($code) ? htmlspecialchars($code) : ''; ?>" 
-                <?php echo isset($id) && !empty($id) ? 'disabled' : ''; ?> required>
+                disabled required>
         </div>
         <div class="form-group">
             <label for="description" class="control-label">Description</label>
@@ -74,13 +74,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($id) {
         // Update existing record
         $sql = "UPDATE item_list SET name='$name', description='$description', unit_price='$unit_price', status='$status' WHERE id='$id'";
+        if ($conn->query($sql)) {
+            echo "<script>window.location.href='?page=items';</script>";
+        }
     } else {
-        // Insert new record
+        // Insert new record into item_list
         $sql = "INSERT INTO item_list (name, code, description, unit_price, status) VALUES ('$name', '$code', '$description', '$unit_price', '$status')";
+        if ($conn->query($sql)) {
+            // Get the last inserted ID
+            $item_id = $conn->insert_id;
+    
+            // Insert into inventory using the new item_id
+            $sql = "INSERT INTO inventory (item_id, item_name, item_code, total_price, stock, notes) VALUES ('$item_id', '$name', '$code', 0, 0, '')";
+            if ($conn->query($sql)) {
+                echo "<script>window.location.href='?page=items';</script>";
+            }
+        }
     }
-
-    if ($conn->query($sql)) {
-        echo "<script>window.location.href='?page=items';</script>";
-    }
+    
 }
 ?>

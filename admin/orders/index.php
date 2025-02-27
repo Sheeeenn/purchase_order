@@ -32,25 +32,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
 				<colgroup>
 					<col width="5%">
 					<col width="15%">
-					<col width="20%">
+					<col width="20">
 					<col width="15%">
-                    <col width="10%">
+                    <col width="15%">
 					<col width="10%">
-					<col width="15%">
+					<col width="10%">
 					<col width="10%">
 
 				</colgroup>
 				<thead>
                 <tr class="bg-navy disabled">
-						<th>#</th>
-						<th>Item No.</th>
-						<th>Item Name</th>
-                        <th>Item Code</th>
-						<th>Total Price</th>
-						<th>Stock</th>
-						<th>Remarks</th>
-                        <th>Unit of Measurement</th>
-						<th>Action</th>
+						<th class="text-center">#</th>
+						<th class="text-center">Item No.</th>
+						<th class="text-center">Item Name</th>
+                        <th class="text-center">Item Code</th>
+						<th class="text-center">Total Price</th>
+						<th class="text-center">Stock</th>
+						<th class="text-center">Remarks</th>
+						<th class="text-center">Action</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -64,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
 							<td class="text-center"><?php echo $row['id']; ?></td>
 							<td class="text-center"><?php echo $row['item_id']; ?></td>
 							<td class="text-center"><?php echo $row['item_name'] ?></td>
+                            <td class="text-center"><?php echo $row['item_code'] ?></td>
 							<td class="text-center"><?php echo number_format($row['total_price']) ?></td>
 							<td class="text-center"><?php echo number_format($row['Stock']) ?></td>
 							<td class="text-center">
@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
 				                    <span class="sr-only">Toggle Dropdown</span>
 				                  </button>
 				                  <div class="dropdown-menu" role="menu">
-								  	<a class="dropdown-item" href="?page=orders/view_orders&id=<?php echo $row['id'] ?>"><span class="fa fa-eye text-primary"></span> View</a>
+								  	<a class="dropdown-item" href="?page=orders/view_orders&id=<?php echo $row['id']?>&itemname=<?php echo $row['item_name'] ?>"><span class="fa fa-eye text-primary"></span> View</a>
 				                    <div class="dropdown-divider"></div>
 				                    <a class="dropdown-item" href="?page=orders/manage_orders&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
 				                    <div class="dropdown-divider"></div>

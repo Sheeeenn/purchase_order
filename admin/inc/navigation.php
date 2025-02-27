@@ -67,7 +67,7 @@
                       <a href="<?php echo base_url ?>admin/?page=orders" class="nav-link nav-orders">
                         <i class="nav-icon fas fa-file-invoice"></i>
                         <p>
-                          Order List
+                          Inventory
                         </p>
                       </a>
                     </li>
@@ -79,6 +79,14 @@
                         </p>
                       </a>
                     </li>
+                    <!-- <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=approved" class="nav-link nav-approved">
+                        <i class="nav-icon fas fa-file-invoice"></i>
+                        <p>
+                          Approved Purchase Orders
+                        </p>
+                      </a>
+                    </li> -->
                     <?php if($_settings->userdata('type') == 1): ?>
                     <li class="nav-header">Maintenance</li>
                     <li class="nav-item dropdown">
@@ -94,6 +102,14 @@
                         <i class="nav-icon fas fa-cogs"></i>
                         <p>
                           Settings
+                        </p>
+                      </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=detachment" class="nav-link nav-detachment">
+                        <i class="nav-icon fas fa-file-invoice"></i>
+                        <p>
+                          Detachment
                         </p>
                       </a>
                     </li>

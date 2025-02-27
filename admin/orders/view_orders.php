@@ -67,37 +67,49 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             <div class="col-md-12">
                 <table class="table table-striped table-bordered" id="item-list">
                     <colgroup>
+                        <col width="5%">
                         <col width="15%">
                         <col width="15%">
-                        <col width="20%">
-                        <col width="30%">
+                        <col width="15%">
+                        <col width="10%">
+                        <col width="10%">
+                        <col width="10%">
                         <col width="20%">
                     </colgroup>
                     <thead>
                         <tr class="bg-navy disabled" style="">
-                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Stock</th>
-                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Item ID</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Item No</th>
                             <th class="bg-navy disabled text-light px-1 py-1 text-center">Item Name</th>
-                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Description</th>
-                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Total</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Reference No.</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Total Price</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Stock</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Payment Terms</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Payment Type</th>
+                            <th class="bg-navy disabled text-light px-1 py-1 text-center">Unit Of Measurement</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php 
-                        if(isset($id)):
-                        $order_items_qry = $conn->query("SELECT * from Inventory where id = $id");
-                        $sub_total = 0;
-                        while($row = $order_items_qry->fetch_assoc()):
-                            //$sub_total += ($row['quantity'] * $row['unit_price']);
+                        if(isset($id)): 
+                            $itemname = $_GET['itemname'];
+                            $order_items_qry = $conn->query("SELECT * FROM approved WHERE item_name = '$itemname'");
+                            
+                            while($row = $order_items_qry->fetch_assoc()): 
                         ?>
-                        <tr class="po-item" data-id="">
-                            <td class="align-middle p-0 text-center"><?php echo $row['Stock'] ?></td>
-                            <td class="align-middle p-1 text-center"><?php echo $row['item_id'] ?></td>
-                            <td class="align-middle p-1 text-center"><?php echo $row['item_name'] ?></td>
-                            <td class="align-middle p-1 item-description"><?php $new = $row['item_id']; $order_items_qry = $conn->query("SELECT * from item_list where id = $new"); while($row2 = $order_items_qry->fetch_assoc()){ echo $row2['description']; }?></td>
-                            <td class="align-middle p-1 text-center"><?php echo number_format($row['total_price']) ?></td>
+                        <tr class="po-item">
+                            <td class="align-middle p-0 text-center"><?php echo $row['id']; ?></td>
+                            <td class="align-middle p-1 text-center"><?php echo $row['item_name']; ?></td>
+                            <td class="align-middle p-1 text-center"><?php echo $row['reference']; ?></td>
+                            <td class="align-middle p-1 text-center"><?php echo number_format($row['total_price']); ?></td>
+                            <td class="align-middle p-1 text-center"><?php echo number_format($row['stock']); ?></td>
+                            <td class="align-middle p-1 text-center"><?php echo $row['payment_term']; ?></td>
+                            <td class="align-middle p-1 text-center"><?php echo $row['payment_type']; ?></td>
+                            <td class="align-middle p-1 text-center"><?php echo $row['unit_measurement']; ?></td>
                         </tr>
-                        <?php endwhile;endif; ?>
+                        <?php 
+                            endwhile; 
+                        endif; 
+                        ?>
                     </tbody>
                 </table>
                 <div class="row">
