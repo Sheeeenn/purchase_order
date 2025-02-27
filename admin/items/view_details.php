@@ -19,8 +19,12 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
         <dl class="row">
             <dt class="col-md-4">Item Name</dt>
             <dd class="col-md-8">: <?php echo $name ?></dd>
+            <dt class="col-md-4">Item Code</dt>
+            <dd class="col-md-8">: <?php echo $code ?></dd>
             <dt class="col-md-4">Description</dt>
             <dd class="col-md-8">: <?php echo $description ?></dd>
+            <dt class="col-md-4">Unit Price</dt>
+            <dd class="col-md-8">: <?php echo number_format($unit_price) ?></dd>
             <dt class="col-md-4">Status</dt>
             <dd class="col-md-8">:&nbsp;
                 <?php if($status == 1): ?>

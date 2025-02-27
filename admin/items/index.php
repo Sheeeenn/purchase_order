@@ -7,7 +7,7 @@
 	<div class="card-header">
 		<h3 class="card-title">List of Items</h3>
 		<div class="card-tools">
-			<a href="javascript:void(0)" id="create_new" class="btn btn-flat btn-primary"><span class="fas fa-plus"></span>  Create New</a>
+			<a href="?page=items/manage_item" id="create_new" class="btn btn-flat btn-primary"><span class="fas fa-plus"></span>  Create New</a>
 		</div>
 	</div>
 	<div class="card-body">
@@ -26,14 +26,14 @@
 				</colgroup>
 				<thead>
 					<tr class="bg-navy disabled">
-						<th>#</th>
-						<th>Date Created</th>
-						<th>Item Name</th>
-                        <th>Item Code</th>
-						<th>Description</th>
-                        <th>Unit Price</th>
-						<th>Status</th>
-						<th>Action</th>
+						<th class="text-center">#</th>
+						<th class="text-center">Date Created</th>
+						<th class="text-center">Item Name</th>
+                        <th class="text-center">Item Code</th>
+						<th class="text-center">Description</th>
+                        <th class="text-center">Unit Price</th>
+						<th class="text-center">Status</th>
+						<th class="text-center">Action</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -45,9 +45,11 @@
 					?>
 						<tr>
 							<td class="text-center"><?php echo $i++; ?></td>
-							<td><?php echo date("Y-m-d H:i",strtotime($row['date_created'])) ?></td>
-							<td><?php echo $row['name'] ?></td>
-							<td class='truncate-3' title="<?php echo $row['description'] ?>"><?php echo $row['description'] ?></td>
+							<td class="text-center"><?php echo date("Y-m-d H:i",strtotime($row['date_created'])) ?></td>
+							<td class="text-center"><?php echo $row['name'] ?></td>
+                            <td class="text-center"><?php echo $row['code'] ?></td>
+							<td class='truncate-3 text-center' title="<?php echo $row['description'] ?>"><?php echo $row['description'] ?></td>
+                            <td class="text-center"><?php echo number_format($row['unit_price']) ?></td>
 							<td class="text-center">
 								<?php if($row['status'] == 1): ?>
 									<span class="badge badge-success">Active</span>
@@ -63,7 +65,7 @@
 				                  <div class="dropdown-menu" role="menu">
 				                    <a class="dropdown-item view_data" href="javascript:void(0)" data-id = "<?php echo $row['id'] ?>"><span class="fa fa-info text-primary"></span> View</a>
 				                    <div class="dropdown-divider"></div>
-				                    <a class="dropdown-item edit_data" href="javascript:void(0)" data-id = "<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
+				                    <a class="dropdown-item edit_data" href="?page=items/manage_item&id=<?php echo $row['id'] ?>"><span class="fa fa-edit text-primary"></span> Edit</a>
 				                    <div class="dropdown-divider"></div>
 				                    <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>"><span class="fa fa-trash text-danger"></span> Delete</a>
 				                  </div>
@@ -87,9 +89,16 @@
 		$('.view_data').click(function(){
 			uni_modal("<i class='fa fa-info-circle'></i> Item's Details","items/view_details.php?id="+$(this).attr('data-id'),"")
 		})
-		$('.edit_data').click(function(){
-			uni_modal("<i class='fa fa-edit'></i> Edit Item's Details","items/manage_item.php?id="+$(this).attr('data-id'))
-		})
+		$('.edit_data').click(function() {
+            // Get the current URL without parameters
+            let currentURL = window.location.origin + window.location.pathname;
+
+            // Get the item ID from the clicked element
+            let itemId = $(this).attr('data-id');
+
+            // Redirect to the new URL
+            window.location.href = currentURL + "manage_list?id=" + itemId;
+        });
 		$('.table th,.table td').addClass('px-1 py-0 align-middle')
 		$('.table').dataTable();
 	})
