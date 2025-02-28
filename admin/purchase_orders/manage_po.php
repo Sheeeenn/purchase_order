@@ -319,17 +319,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             date_purchase = '$date_purchase',
             date_recieved = '$date_received',
             notes = '$notes'";
-
+    
         if (isset($_POST['status'])) {
             $status = $_POST['status'];
             $update_query .= ", status = '$status'";
         }
-
+    
         $update_query .= " WHERE id = '$id'";
-
-
+    
         if ($conn->query($update_query)) {
             $purchase_id = $id;
+    
+            // Check if status == 2
+            $check_query = "SELECT checked, reference_id FROM purchase_list WHERE id = '$purchase_id' AND status = 1";
+            $check_result = $conn->query($check_query);
+    
+            if ($check_result->num_rows > 0) {
+                $row = $check_result->fetch_assoc();
+                if ($row['checked'] == 0) {
+                    // Use existing reference_id or generate a new one
+                    $reference_number = $row['reference_id'];
+    
+                    // Fetch item name from item_list using item_id
+                    $item_name = "";
+                    $item_query = "SELECT name FROM item_list WHERE id = '$item_id'";
+                    $item_result = $conn->query($item_query);
+                    if ($item_result->num_rows > 0) {
+                        $item_row = $item_result->fetch_assoc();
+                        $item_name = $item_row['name'];
+                    }
+    
+                    // Insert into approved table
+                    $insert_query = "INSERT INTO approved (item_name, reference, total_price, stock, payment_term, payment_type, unit_measurement) 
+                                    VALUES ('$item_name', '$reference_number', '$total_amount', '$quantity', 'TEST', 'TEST', 'TEST')";
+                    if ($conn->query($insert_query)) {
+                        $reference_id = $conn->insert_id;
+    
+                        // Update purchase_list with reference_id and set checked = 1
+                        $update_purchase_query = "UPDATE purchase_list SET reference_id = '$reference_id', checked = 1 WHERE id = '$purchase_id'";
+                        $conn->query($update_purchase_query);
+                    }
+                }
+            }
         }
     } else {
         $status = isset($_POST['status']) ? $_POST['status'] : 0;
