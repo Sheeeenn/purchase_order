@@ -356,8 +356,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $reference_id = $conn->insert_id;
     
                         // Update purchase_list with reference_id and set checked = 1
-                        $update_purchase_query = "UPDATE purchase_list SET reference_id = '$reference_id', checked = 1 WHERE id = '$purchase_id'";
+                        $update_purchase_query = "UPDATE purchase_list SET checked = 1 WHERE id = '$purchase_id'";
                         $conn->query($update_purchase_query);
+
+                        $update_inventory= "UPDATE inventory SET total_price = total_price + '$total_amount', Stock = Stock + '$quantity' WHERE item_id = '$item_id'";
+                        $conn->query($update_inventory);
                     }
                 }
             }
@@ -375,26 +378,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($conn->query($insert_query)) {
             $purchase_id = $conn->insert_id;
     
-            // Check if item_id exists in inventory
-            $check_query = "SELECT * FROM inventory WHERE item_id = '$item_id'";
-            $result = $conn->query($check_query);
+            // // Check if item_id exists in inventory
+            // $check_query = "SELECT * FROM inventory WHERE item_id = '$item_id'";
+            // $result = $conn->query($check_query);
     
-            if ($result->num_rows > 0) {
-                // Item exists, update Stock and total_price
-                $update_inventory_query = "UPDATE inventory 
-                                           SET Stock = Stock + '$quantity', 
-                                               total_price = total_price + '$total_amount' 
-                                           WHERE item_id = '$item_id'";
-                $conn->query($update_inventory_query);
-            } else {
+            // if ($result->num_rows > 0) {
+            //     // Item exists, update Stock and total_price
+            //     $update_inventory_query = "UPDATE inventory 
+            //                                SET Stock = Stock + '$quantity', 
+            //                                    total_price = total_price + '$total_amount' 
+            //                                WHERE item_id = '$item_id'";
+            //     $conn->query($update_inventory_query);
+            // } else {
                 // Item does not exist, insert new inventory record
-                $get_item_name = $conn->query("SELECT name FROM item_list WHERE id = '$item_id'");
-                $item_name_row = $get_item_name->fetch_assoc();
-                $item_name = $item_name_row['name'];
+                // $get_item_name = $conn->query("SELECT name FROM item_list WHERE id = '$item_id'");
+                // $item_name_row = $get_item_name->fetch_assoc();
+                // $item_name = $item_name_row['name'];
     
-                $insert_inventory_query = "INSERT INTO inventory (item_id, item_name, total_price, Stock) 
-                                           VALUES ('$item_id', '$item_name', '$total_amount', '$quantity')";
-                $conn->query($insert_inventory_query);
+                // $insert_inventory_query = "INSERT INTO inventory (item_id, item_name, total_price, Stock) 
+                //                            VALUES ('$item_id', '$item_name', '$total_amount', '$quantity')";
+                // $conn->query($insert_inventory_query);
             }
         }
     }
