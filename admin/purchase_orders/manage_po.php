@@ -154,8 +154,30 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                         <?php endwhile; ?>
                                     </select>
                                 </td>
-                                <td class="align-middle p-1 item-description">
-                                    <input type="text" class="text-center w-100 border-0" name="detachment" value="<?php echo htmlspecialchars($row['detachment']) ?>"/>
+                                <td class="align-middle p-1">
+                                    <select name="detachment" id="detachment" class="custom-select custom-select-sm rounded-0 select2">
+                                        <?php 
+                                            $selected_detachment = "Select an Detachment";
+                                            $selected_detachment_id = $row['detachment'] ?? '';
+
+                                            if (!empty($selected_detachment_id)) {
+                                                $detachment_qry = $conn->query("SELECT * FROM detachment WHERE id = '{$selected_detachment_id}'");
+                                                if ($detachment_qry->num_rows > 0) {
+                                                    $detachment = $detachment_qry->fetch_array();
+                                                    $selected_detachment = $detachment['name'];
+                                                }
+                                            }
+                                        ?>
+                                        <option value="<?php echo htmlspecialchars($selected_detachment_id); ?>" selected><?php echo $selected_detachment; ?></option>
+                                        <?php 
+                                            $detachment_qry = $conn->query("SELECT * FROM `detachment` ORDER BY `name` ASC");
+                                            while($row2 = $detachment_qry->fetch_assoc()):
+                                        ?>
+                                        <option value="<?php echo $row2['id']; ?>" <?php echo (!empty($selected_detachment_id) && $selected_detachment_id == $row2['id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($row2['name']); ?>
+                                        </option>
+                                        <?php endwhile; ?>
+                                    </select>
                                 </td>
                                 <td class="align-middle p-1">
                                     <input type="number" step="any" class="text-right w-100 border-0" name="amount_requested" value="<?php echo htmlspecialchars($row['amount_requested']) ?>"/>
@@ -287,7 +309,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $date_purchase = isset($_POST['date_purchase']) ? $_POST['date_purchase'] : null;
     $date_received = isset($_POST['date_recieved']) ? $_POST['date_recieved'] : null;
     $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
-    $detachment = isset($_POST['detachment']) ? $_POST['detachment'] : '';
+    $detachment = isset($_POST['detachment']) ? $_POST['detachment'] : 1;
     $item_id = isset($_POST['item_id']) ? $_POST['item_id'] : 1;
     $quantity = isset($_POST['quantity']) ? $_POST['quantity'] : 1;
     $requestor_name = isset($_POST['requestor_name']) ? $_POST['requestor_name'] : '';
@@ -398,7 +420,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // $insert_inventory_query = "INSERT INTO inventory (item_id, item_name, total_price, Stock) 
                 //                            VALUES ('$item_id', '$item_name', '$total_amount', '$quantity')";
                 // $conn->query($insert_inventory_query);
-            }
         }
     }
     

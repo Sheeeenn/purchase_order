@@ -125,7 +125,11 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                 $result = $query->fetch_assoc();
                                 echo $result['name'] ?? 'N/A';
                                 ?></td>
-                            <td class="align-middle p-1 item-description"><?php echo $row['detachment'] ?></td>
+                            <td class="align-middle p-1"><?php 
+                                $query = $conn->query("SELECT name FROM detachment WHERE id = '{$row['detachment']}'"); 
+                                $result = $query->fetch_assoc();
+                                echo $result['name'] ?? 'N/A';
+                                ?></td>
                             <td class="align-middle p-1"><?php echo number_format($row['amount_requested']) ?></td>
                             <td class="align-middle p-1 text-right total-price"><?php echo number_format($row['quantity'] * $row['amount_requested']) ?></td>
                         </tr>
