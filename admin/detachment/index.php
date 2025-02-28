@@ -5,7 +5,7 @@
 <?php endif;?>
 <div class="card card-outline card-primary">
 	<div class="card-header">
-		<h3 class="card-title">List of Suppliers</h3>
+		<h3 class="card-title">List of Detachments</h3>
 		<div class="card-tools">
 			<a href="javascript:void(0)" id="create_new" class="btn btn-flat btn-primary"><span class="fas fa-plus"></span>  Create New</a>
 		</div>
@@ -27,7 +27,7 @@
 					<tr class="bg-navy disabled">
 						<th>#</th>
 						<th>Date Created</th>
-						<th>Supplier</th>
+						<th>Detachment</th>
 						<th>Contact Person</th>
 						<th>Address</th>
 						<th>Status</th>
