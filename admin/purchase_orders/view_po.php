@@ -164,24 +164,6 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                             <p class="m-0" style="font-size: 20px;"><b><?php echo $received_by ?></b></p>
                         </div>
                     </div>
-                    <div class="col-6 row">
-                        <div class="col-6">
-                            <p  class="m-0"><b>Date of Purchase:</b></p>
-                            <p style="font-size: 20px;"><b><?php 
-                            echo ($date_purchase == "0000-00-00" || empty($date_purchase)) 
-                                ? 'N/A' 
-                                : date("Y-m-d", strtotime($date_purchase)); 
-                            ?></b></p>
-                        </div>
-                        <div class="col-6">
-                            <p  class="m-0"><b>Date Received:</b></p>
-                            <p style="font-size: 20px;"><b><?php 
-                            echo ($date_recieved == "0000-00-00" || empty($date_recieved)) 
-                                ? 'N/A' 
-                                : date("Y-m-d", strtotime($date_recieved)); 
-                            ?></b></p>
-                        </div>
-                    </div>
                 </div>
                 <div class="row">
                     <div class="col-6">

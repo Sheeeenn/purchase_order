@@ -80,18 +80,26 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 						<colgroup>
                             <col width="10%">
                             <col width="10%">
-                            <col width="20%">
-                            <col width="30%">
-                            <col width="15%">
-                            <col width="15%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
+                            <col width="10%">
 						</colgroup>
 						<thead>
 							<tr class="bg-navy disabled">
-								<th class="px-1 py-1 text-center">Qty</th>
-								<th class="px-1 py-1 text-center">Req Name</th>
 								<th class="px-1 py-1 text-center">Item</th>
+								<th class="px-1 py-1 text-center">Item Code</th>
+								<th class="px-1 py-1 text-center">Req Name</th>
 								<th class="px-1 py-1 text-center">Detachment</th>
-								<th class="px-1 py-1 text-center">Amount Requested</th>
+                                <th class="px-1 py-1 text-center">Category</th>
+                                <th class="px-1 py-1 text-center">Payment Terms</th>
+                                <th class="px-1 py-1 text-center">Payment Type</th>
+                                <th class="px-1 py-1 text-center">Unit Of Measurement</th>
+								<th class="px-1 py-1 text-center">Quantity</th>
 								<th class="px-1 py-1 text-center">Total</th>
 							</tr>
 						</thead>
@@ -123,91 +131,183 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 
                         foreach ($order_items as $row): ?>
                             <tr class="po-item" data-id="">
-                                <td class="align-middle p-0 text-center">
-                                    <input type="number" class="text-center w-100 border-0" step="any" name="quantity" value="<?php echo htmlspecialchars($row['quantity']) ?>"/>
-                                </td>
-                                <td class="align-middle p-1">
-                                    <input type="text" class="text-center w-100 border-0" name="requestor_name" value="<?php echo htmlspecialchars($row['requestor_name']) ?>"/>
-                                </td>
-                                <td class="align-middle p-1">
-                                    <select name="item_id" id="item_id" class="custom-select custom-select-sm rounded-0 select2">
-                                        <?php 
-                                            $selected_item = "Select an Item";
-                                            $selected_item_id = $row['item_id'] ?? '';
+                            <td class="align-middle p-1">
+                                <select name="item_id" id="item_id" class="custom-select custom-select-sm rounded-0 select2" onchange="updateItemDetails()">
+                                    <?php 
+                                        $selected_item = "Select an Item";
+                                        $selected_item_id = $row['item_id'] ?? '';
+                                        $selected_code = '';
+                                        $selected_unit_price = 0;
 
-                                            if (!empty($selected_item_id)) {
-                                                $item_qry = $conn->query("SELECT * FROM item_list WHERE id = '{$selected_item_id}'");
-                                                if ($item_qry->num_rows > 0) {
-                                                    $item = $item_qry->fetch_array();
-                                                    $selected_item = $item['name'];
-                                                }
+                                        if (!empty($selected_item_id)) {
+                                            $item_qry = $conn->query("SELECT * FROM item_list WHERE id = '{$selected_item_id}'");
+                                            if ($item_qry->num_rows > 0) {
+                                                $item = $item_qry->fetch_array();
+                                                $selected_item = $item['name'];
+                                                $selected_code = $item['code'];
+                                                $selected_unit_price = $item['unit_price'];
                                             }
-                                        ?>
-                                        <option value="<?php echo htmlspecialchars($selected_item_id); ?>" selected><?php echo $selected_item; ?></option>
-                                        <?php 
-                                            $item_qry = $conn->query("SELECT * FROM `item_list` ORDER BY `name` ASC");
-                                            while($row2 = $item_qry->fetch_assoc()):
-                                        ?>
-                                        <option value="<?php echo $row2['id']; ?>" <?php echo (!empty($selected_item_id) && $selected_item_id == $row2['id']) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($row2['name']); ?>
-                                        </option>
-                                        <?php endwhile; ?>
-                                    </select>
-                                </td>
-                                <td class="align-middle p-1">
-                                    <select name="detachment" id="detachment" class="custom-select custom-select-sm rounded-0 select2">
-                                        <?php 
-                                            $selected_detachment = "Select an Detachment";
-                                            $selected_detachment_id = $row['detachment'] ?? '';
+                                        }
+                                    ?>
+                                    
+                                    <option value="<?php echo htmlspecialchars($selected_item_id); ?>" 
+                                            data-code="<?php echo htmlspecialchars($selected_code); ?>" 
+                                            data-unit-price="<?php echo htmlspecialchars($selected_unit_price); ?>" 
+                                            selected>
+                                        <?php echo $selected_item; ?>
+                                    </option>
 
-                                            if (!empty($selected_detachment_id)) {
-                                                $detachment_qry = $conn->query("SELECT * FROM detachment WHERE id = '{$selected_detachment_id}'");
-                                                if ($detachment_qry->num_rows > 0) {
-                                                    $detachment = $detachment_qry->fetch_array();
-                                                    $selected_detachment = $detachment['name'];
-                                                }
+                                    <?php 
+                                        $item_qry = $conn->query("SELECT * FROM `item_list` ORDER BY `name` ASC");
+                                        while($row2 = $item_qry->fetch_assoc()):
+                                    ?>
+                                    <option value="<?php echo $row2['id']; ?>" 
+                                            data-code="<?php echo htmlspecialchars($row2['code']); ?>" 
+                                            data-unit-price="<?php echo htmlspecialchars($row2['unit_price']); ?>">
+                                        <?php echo htmlspecialchars($row2['name']); ?>
+                                    </option>
+                                    <?php endwhile; ?>
+                                </select>
+                            </td>
+
+                            <td class="align-middle p-0 text-center">
+                                <input type="text" class="text-center w-100 border-0" id="code" name="code" 
+                                    value="<?php echo htmlspecialchars($selected_code); ?>" readonly />
+                            </td>
+
+                            <td class="align-middle p-1">
+                                <input type="text" class="text-center w-100 border-0" name="requestor_name" value="<?php echo htmlspecialchars($row['requestor_name']) ?>"/>
+                            </td>
+
+                            <td class="align-middle p-1">
+                                <select name="detachment" id="detachment" class="custom-select custom-select-sm rounded-0 select2">
+                                    <?php 
+                                        $selected_detachment = "Select an Detachment";
+                                        $selected_detachment_id = $row['detachment'] ?? '';
+
+                                        if (!empty($selected_detachment_id)) {
+                                            $detachment_qry = $conn->query("SELECT * FROM detachment WHERE id = '{$selected_detachment_id}'");
+                                            if ($detachment_qry->num_rows > 0) {
+                                                $detachment = $detachment_qry->fetch_array();
+                                                $selected_detachment = $detachment['name'];
                                             }
-                                        ?>
-                                        <option value="<?php echo htmlspecialchars($selected_detachment_id); ?>" selected><?php echo $selected_detachment; ?></option>
-                                        <?php 
-                                            $detachment_qry = $conn->query("SELECT * FROM `detachment` ORDER BY `name` ASC");
-                                            while($row2 = $detachment_qry->fetch_assoc()):
-                                        ?>
-                                        <option value="<?php echo $row2['id']; ?>" <?php echo (!empty($selected_detachment_id) && $selected_detachment_id == $row2['id']) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($row2['name']); ?>
-                                        </option>
-                                        <?php endwhile; ?>
-                                    </select>
-                                </td>
-                                <td class="align-middle p-1">
-                                    <input type="number" step="any" class="text-right w-100 border-0" name="amount_requested" value="<?php echo htmlspecialchars($row['amount_requested']) ?>"/>
-                                </td>
-                                <td class="align-middle p-1 text-right total-price">
-                                    <?php echo number_format((float)$row['quantity'] * (float)$row['amount_requested'], 2); ?>
-                                </td>
+                                        }
+                                    ?>
+                                    <option value="<?php echo htmlspecialchars($selected_detachment_id); ?>" selected><?php echo $selected_detachment; ?></option>
+                                    <?php 
+                                        $detachment_qry = $conn->query("SELECT * FROM `detachment` ORDER BY `name` ASC");
+                                        while($row2 = $detachment_qry->fetch_assoc()):
+                                    ?>
+                                    <option value="<?php echo $row2['id']; ?>" <?php echo (!empty($selected_detachment_id) && $selected_detachment_id == $row2['id']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($row2['name']); ?>
+                                    </option>
+                                    <?php endwhile; ?>
+                                </select>
+                            </td>
+
+                            <td class="align-middle p-0 text-center">
+                                <select name="category" id="category" class="custom-select custom-select-sm rounded-0">
+                                    <?php 
+                                        $selected_category = $row['category'] ?? 'General';
+                                    ?>
+                                    <option value="General" <?php echo ($selected_category == "General") ? "selected" : ""; ?>>General</option>
+                                    <option value="Office" <?php echo ($selected_category == "Office") ? "selected" : ""; ?>>Office</option>
+                                </select>
+                            </td>
+
+                            <td class="align-middle p-0 text-center">
+                                <select name="payment_term" id="payment_term" class="custom-select custom-select-sm rounded-0">
+                                    <?php 
+                                        $selected_payment_term = $row['payment_term'] ?? 30;
+                                    ?>
+                                    <option value="30" <?php echo ($selected_payment_term == 30) ? "selected" : ""; ?>>30</option>
+                                    <option value="60" <?php echo ($selected_payment_term == 60) ? "selected" : ""; ?>>60</option>
+                                    <option value="90" <?php echo ($selected_payment_term == 90) ? "selected" : ""; ?>>90</option>
+                                    <option value="120" <?php echo ($selected_payment_term == 120) ? "selected" : ""; ?>>120</option>
+                                </select>
+                            </td>
+
+                            <td class="align-middle p-0 text-center">
+                                <select name="payment_type" id="payment_type" class="custom-select custom-select-sm rounded-0">
+                                    <?php 
+                                        $selected_payment_type = $row['payment_type'] ?? "CASH";
+                                    ?>
+                                    <option value="CASH" <?php echo ($selected_payment_type == "CASH") ? "selected" : ""; ?>>CASH</option>
+                                    <option value="CBC" <?php echo ($selected_payment_type == "CBC") ? "selected" : ""; ?>>CBC</option>
+                                    <option value="PBC" <?php echo ($selected_payment_type == "PBC") ? "selected" : ""; ?>>PBC</option>
+                                </select>
+                            </td>
+
+                            <td class="align-middle p-0 text-center">
+                                <select name="unit_meas" id="unit_meas" class="custom-select custom-select-sm rounded-0">
+                                    <?php 
+                                        $selected_unit_meas = $row['unit_meas'] ?? 'Piece';
+                                    ?>
+                                    <option value="Piece" <?php echo ($selected_unit_meas == "Piece") ? "selected" : ""; ?>>Piece</option>
+                                    <option value="Box" <?php echo ($selected_unit_meas == "Box") ? "selected" : ""; ?>>Box</option>
+                                </select>
+                            </td>
+
+                            <td class="align-middle p-0 text-center">
+                                <input type="number" class="text-center w-100 border-0" step="any" name="quantity" id="quantity" 
+                                    value="<?php echo htmlspecialchars($row['quantity']); ?>" oninput="calculateTotal()" />
+                            </td>
+
+                            <td class="align-middle p-1" style="display: none;">
+                                <input type="number" step="any" class="text-right w-100 border-0" name="amount_requested" id="amount_requested" 
+                                    value="<?php echo htmlspecialchars($selected_unit_price); ?>" readonly />
+                            </td>
+
+                            <td class="align-middle p-1 text-right total-price" id="total_price">
+                                <?php echo number_format((float)$row['quantity'] * (float)$selected_unit_price, 2); ?>
+                            </td>
+
+                            <script>
+                                function updateItemDetails() {
+                                    var select = document.getElementById("item_id");
+                                    var selectedOption = select.options[select.selectedIndex];
+
+                                    var itemCode = selectedOption.getAttribute("data-code");
+                                    var unitPrice = parseFloat(selectedOption.getAttribute("data-unit-price")) || 0;
+
+                                    document.getElementById("code").value = itemCode;
+                                    document.getElementById("amount_requested").value = unitPrice;
+
+                                    calculateTotal();
+                                }
+
+                                function calculateTotal() {
+                                    var quantity = parseFloat(document.getElementById("quantity").value) || 0;
+                                    var unitPrice = parseFloat(document.getElementById("amount_requested").value) || 0;
+                                    var totalPrice = (quantity * unitPrice).toFixed(2);
+
+                                    document.getElementById("total_price").innerText = totalPrice;
+                                }
+                            </script>
+
                             </tr>
                         <?php endforeach; ?>
 						</tbody>
 						<tfoot>
 							<tr class="bg-lightblue">
                                 <tr>
-                                    <th class="p-1 text-right" colspan="5">Sub Total</th>
+                                    <th class="p-1 text-right" colspan="9">Sub Total</th>
                                     <th class="p-1 text-right" id="sub_total"><?php echo isset($sub_total) ? number_format($sub_total) : 0 ?></th>
                                 </tr>
 								<tr>
-									<th class="p-1 text-right" colspan="5">Discount (%)
+									<th class="p-1 text-right" colspan="9">Discount (%)
 									<input type="number" step="any" name="discount_percentage" class="border-light text-right" value="<?php echo isset($discount_percentage) ? $discount_percentage : 0 ?>">
 									</th>
 									<th class="p-1"><input type="text" class="w-100 border-0 text-right" readonly value="<?php echo isset($discount_amount) ? $discount_amount : 0 ?>" name="discount_amount"></th>
 								</tr>
 								<tr>
-									<th class="p-1 text-right" colspan="5">Tax Inclusive (%)
+									<th class="p-1 text-right" colspan="9">Tax Inclusive (%)
 									<input type="number" step="any" name="tax_percentage" class="border-light text-right" value="<?php echo isset($tax_percentage) ? $tax_percentage : 0 ?>">
 									</th>
 									<th class="p-1"><input type="text" class="w-100 border-0 text-right" readonly value="<?php echo isset($tax_amount) ? $tax_amount : 0 ?>" name="tax_amount"></th>
 								</tr>
 								<tr>
-                                <th class="p-1 text-right" colspan="5">Total</th>
+                                <th class="p-1 text-right" colspan="9">Total</th>
                                 <th class="p-1 text-right"> <input  name="total_amount" id="total" type="text" class="w-100 border-0 text-right" readonly value="<?php echo isset($tax_amount) ? number_format($sub_total - $discount_amount) : 0 ?>"></th>
                             </tr>
 							</tr>
@@ -220,28 +320,6 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                 <input type="text" class="text-center w-100 form-control rounded-0" name="received_by" value="<?php echo isset($received_by) ? $received_by : ""?>"/>
                             </div>
                         </div>
-                        <div class="col-6 row">
-                            <div class="col-6">
-                                <p class="m-0"><b>Date of Purchase:</b></p>
-                                <input type="date" name="date_purchase" class="form-control" 
-                                    value="<?php echo ($date_purchase == '0000-00-00' || empty($date_purchase)) 
-                                        ? '' 
-                                        : date('Y-m-d', strtotime($date_purchase)); ?>">
-                            </div>
-                            <div class="col-6">
-                                <p class="m-0"><b>Date Received:</b></p>
-                                <input type="date" name="date_recieved" class="form-control" 
-                                    value="<?php echo ($date_recieved == '0000-00-00' || empty($date_recieved)) 
-                                        ? '' 
-                                        : date('Y-m-d', strtotime($date_recieved)); ?>">
-                            </div>
-                        </div>
-                    </div>
-					<div class="row">
-						<div class="col-md-6">
-							<label for="notes" class="control-label">Notes</label>
-							<textarea name="notes" id="notes" cols="10" rows="4" class="form-control rounded-0"><?php echo isset($notes) ? $notes : '' ?></textarea>
-						</div>
                         <?php if(isset($id)): ?>
                             <div class="col-md-6">
                                 <label for="status" class="control-label">Status</label>
@@ -253,6 +331,12 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                 </select>
                             </div>
                         <?php endif; ?>
+                    </div>
+					<div class="row">
+						<div class="col-md-6">
+							<label for="notes" class="control-label">Notes</label>
+							<textarea name="notes" id="notes" cols="10" rows="4" class="form-control rounded-0"><?php echo isset($notes) ? $notes : '' ?></textarea>
+						</div>
 				</div>
 			</div>
 		</form>
@@ -306,16 +390,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = isset($_POST['id']) ? $_POST['id'] : '';
     $supplier_id = isset($_POST['supplier_id']) ? $_POST['supplier_id'] : '';
     $received_by = isset($_POST['received_by']) ? $_POST['received_by'] : '';
-    $date_purchase = isset($_POST['date_purchase']) ? $_POST['date_purchase'] : null;
-    $date_received = isset($_POST['date_recieved']) ? $_POST['date_recieved'] : null;
+    //$date_purchase = isset($_POST['date_purchase']) ? $_POST['date_purchase'] : null;
+    //$date_received = isset($_POST['date_recieved']) ? $_POST['date_recieved'] : null;
     $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
     $detachment = isset($_POST['detachment']) ? $_POST['detachment'] : 1;
+
+    $category = isset($_POST['category']) ? $_POST['category'] : "General";
+    $payment_term = isset($_POST['payment_term']) ? $_POST['payment_term'] : 30;
+    $payment_type = isset($_POST['payment_type']) ? $_POST['payment_type'] : "CASH";
+    $unit_meas = isset($_POST['unit_meas']) ? $_POST['unit_meas'] : "Piece";
+
     $item_id = isset($_POST['item_id']) ? $_POST['item_id'] : 1;
     $quantity = isset($_POST['quantity']) ? $_POST['quantity'] : 1;
     $requestor_name = isset($_POST['requestor_name']) ? $_POST['requestor_name'] : '';
-
-
-
     $amount_requested = isset($_POST['amount_requested']) ? $_POST['amount_requested'] : 0;
     $discount_percentage = isset($_POST['discount_percentage']) ? $_POST['discount_percentage'] : 0;
     $tax_percentage = isset($_POST['tax_percentage']) ? $_POST['tax_percentage'] : 0;
@@ -334,12 +421,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             tax_percentage = '$tax_percentage',
             tax_amount = '$tax_amount',
             detachment = '$detachment',
+            category = '$category',
+            payment_term = '$payment_term',
+            payment_type = '$payment_type',
+            unit_meas = '$unit_meas',
             requestor_name = '$requestor_name',
             received_by = '$received_by',
             amount_requested = '$amount_requested',
             total_amount = '$total_amount',
-            date_purchase = '$date_purchase',
-            date_recieved = '$date_received',
             notes = '$notes'";
     
         if (isset($_POST['status'])) {
@@ -394,8 +483,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $ref = "AGF-PO" . $range;
     
         // Insert a new purchase
-        $insert_query = "INSERT INTO purchase_list (reference_id, supplier_id, item_id, quantity, discount_percentage, discount_amount, tax_percentage, tax_amount, detachment, requestor_name, received_by, amount_requested, total_amount, date_purchase, date_recieved, notes, status) 
-        VALUES ('$ref', '$supplier_id', '$item_id', '$quantity', '$discount_percentage', '$discount_amount', '$tax_percentage', '$tax_amount', '$detachment', '$requestor_name', '$received_by', '$amount_requested', '$total_amount', '$date_purchase', '$date_received', '$notes', '$status')";
+        $insert_query = "INSERT INTO purchase_list (reference_id, 
+        supplier_id, 
+        item_id, 
+        quantity, 
+        discount_percentage, 
+        discount_amount, 
+        tax_percentage, 
+        tax_amount, 
+        detachment,
+        category,
+        payment_term, 
+        payment_type, 
+        unit_meas, 
+        requestor_name, 
+        received_by, 
+        amount_requested, 
+        total_amount, 
+        notes, 
+        status) 
+        VALUES ('$ref', 
+        '$supplier_id', 
+        '$item_id', 
+        '$quantity', 
+        '$discount_percentage', 
+        '$discount_amount', 
+        '$tax_percentage', 
+        '$tax_amount', 
+        '$detachment',
+        '$category',
+        '$payment_term', 
+        '$payment_type', 
+        '$unit_meas',  
+        '$requestor_name', 
+        '$received_by', 
+        '$amount_requested', 
+        '$total_amount', 
+        '$notes', 
+        '$status')";
     
         if ($conn->query($insert_query)) {
             $purchase_id = $conn->insert_id;
