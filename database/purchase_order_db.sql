@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 13, 2025 at 09:41 PM
+-- Generation Time: Mar 02, 2025 at 05:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +24,48 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `approved`
+--
+
+CREATE TABLE `approved` (
+  `id` int(11) NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `reference` varchar(255) NOT NULL,
+  `total_price` float NOT NULL,
+  `stock` int(11) NOT NULL,
+  `payment_term` varchar(255) NOT NULL,
+  `payment_type` varchar(255) NOT NULL,
+  `unit_measurement` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `detachment`
+--
+
+CREATE TABLE `detachment` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `contact_person` varchar(255) NOT NULL,
+  `contact` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `date_created` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `detachment`
+--
+
+INSERT INTO `detachment` (`id`, `name`, `address`, `contact_person`, `contact`, `email`, `status`, `date_created`) VALUES
+(1, 'Detachment 1', '19 Cebu City', 'Sheen', '09123453143', 'cebu.sheen@gmail.com', 1, '2025-02-28'),
+(3, 'Detachment 2', 'Block 8 St. San Andres, Dumaguete City', 'Ryan Beng', '09293759284', 'Cryan69@gmail.com', 1, '2025-03-02');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `inventory`
 --
 
@@ -31,18 +73,11 @@ CREATE TABLE `inventory` (
   `id` int(11) NOT NULL,
   `item_id` int(11) NOT NULL,
   `item_name` varchar(255) DEFAULT NULL,
+  `item_code` varchar(255) NOT NULL,
   `total_price` bigint(20) NOT NULL,
   `Stock` int(11) NOT NULL,
   `notes` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `inventory`
---
-
-INSERT INTO `inventory` (`id`, `item_id`, `item_name`, `total_price`, `Stock`, `notes`) VALUES
-(1, 2, 'Item 102', 111243, 5, 'Our Food'),
-(3, 1, 'Item 1', 15417, 100, '');
 
 -- --------------------------------------------------------
 
@@ -53,19 +88,12 @@ INSERT INTO `inventory` (`id`, `item_id`, `item_name`, `total_price`, `Stock`, `
 CREATE TABLE `item_list` (
   `id` int(30) NOT NULL,
   `name` varchar(250) NOT NULL,
+  `code` varchar(255) NOT NULL,
   `description` text NOT NULL,
+  `unit_price` float NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT ' 1 = Active, 0 = Inactive',
   `date_created` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `item_list`
---
-
-INSERT INTO `item_list` (`id`, `name`, `description`, `status`, `date_created`) VALUES
-(1, 'Item 1', 'Sample Item Only. Test 101', 1, '2021-09-08 10:17:19'),
-(2, 'Item 102', 'Sample Only', 1, '2021-09-08 10:21:42'),
-(3, 'Item 3', 'Sample product 103. 3x25 per boxes', 1, '2021-09-08 10:22:10');
 
 -- --------------------------------------------------------
 
@@ -80,17 +108,6 @@ CREATE TABLE `order_items` (
   `unit_price` float NOT NULL,
   `quantity` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `order_items`
---
-
-INSERT INTO `order_items` (`po_id`, `item_id`, `unit`, `unit_price`, `quantity`) VALUES
-(1, 1, 'boxes', 15000, 10),
-(1, 2, 'pcs', 17999.9, 6),
-(2, 1, 'pcs', 3788.99, 10),
-(7, 2, 'boxes', 22000, 1),
-(8, 3, '2', 300, 2);
 
 -- --------------------------------------------------------
 
@@ -112,16 +129,6 @@ CREATE TABLE `po_list` (
   `date_updated` datetime DEFAULT NULL ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `po_list`
---
-
-INSERT INTO `po_list` (`id`, `po_no`, `supplier_id`, `discount_percentage`, `discount_amount`, `tax_percentage`, `tax_amount`, `notes`, `status`, `date_created`, `date_updated`) VALUES
-(1, 'REF-27330104609', 1, 2, 5159.99, 12, 30959.9, 'Our Food', 1, '2021-09-08 15:20:57', '2025-02-10 22:11:38'),
-(2, 'PO-92093417806', 2, 1, 378.899, 12, 4546.79, 'Sample', 1, '2021-09-08 15:49:55', '2025-02-06 00:15:10'),
-(7, 'PO-19150827073', 2, 0, 0, 0, 0, 'GUNDAM', 0, '2025-02-07 19:40:08', NULL),
-(8, 'REF-44665893324', 2, 0, 0, 0, 0, '', 0, '2025-02-08 22:37:47', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -138,28 +145,20 @@ CREATE TABLE `purchase_list` (
   `discount_amount` float NOT NULL,
   `tax_percentage` float NOT NULL,
   `tax_amount` float NOT NULL,
-  `detachment` varchar(255) NOT NULL,
+  `detachment` int(11) NOT NULL,
+  `category` varchar(255) NOT NULL,
+  `payment_term` int(11) NOT NULL,
+  `payment_type` varchar(255) NOT NULL,
+  `unit_meas` varchar(255) NOT NULL,
   `requestor_name` varchar(255) NOT NULL,
   `received_by` varchar(255) NOT NULL,
   `amount_requested` float NOT NULL,
   `total_amount` float NOT NULL,
   `date_request` date NOT NULL DEFAULT current_timestamp(),
-  `date_purchase` date NOT NULL,
-  `date_recieved` date NOT NULL,
   `notes` varchar(255) NOT NULL,
-  `status` tinyint(4) NOT NULL COMMENT '0 = pending, 1 approved, 2 = denied'
+  `status` tinyint(4) NOT NULL COMMENT '0 = pending, 1 approved, 2 = denied',
+  `checked` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `purchase_list`
---
-
-INSERT INTO `purchase_list` (`id`, `reference_id`, `supplier_id`, `item_id`, `quantity`, `discount_percentage`, `discount_amount`, `tax_percentage`, `tax_amount`, `detachment`, `requestor_name`, `received_by`, `amount_requested`, `total_amount`, `date_request`, `date_purchase`, `date_recieved`, `notes`, `status`) VALUES
-(1, 'REF-247192832', 2, 1, 5, 2, 20, 1, 10, 'TESTING', 'SHEEN', 'JUSTIN', 100, 380, '2025-02-12', '2025-02-12', '0000-00-00', 'TEST', 0),
-(2, 'REF-377139831', 1, 2, 5, 2, 40, 1, 20, 'Detachment here', 'Sheen Sheen', 'Justin Sheen', 40, 160, '2025-02-13', '0000-00-00', '0000-00-00', 'Good item', 1),
-(5, 'REF-963392019', 2, 2, 15, 20, 600, 2, 48, 'Testing', 'Anna', '', 200, 2448, '2025-02-14', '0000-00-00', '0000-00-00', '', 0),
-(6, 'REF-736373482', 1, 1, 55, 30, 4950, 2, 231, '', 'Sheen', '', 300, 11781, '2025-02-14', '0000-00-00', '0000-00-00', '', 0),
-(7, 'REF-323129682', 2, 1, 45, 20, 900, 1, 36, 'Test', 'Guiriba', '', 100, 3636, '2025-02-14', '0000-00-00', '0000-00-00', '', 0);
 
 -- --------------------------------------------------------
 
@@ -183,8 +182,8 @@ CREATE TABLE `supplier_list` (
 --
 
 INSERT INTO `supplier_list` (`id`, `name`, `address`, `contact_person`, `contact`, `email`, `status`, `date_created`) VALUES
-(1, 'Supplier 101', 'Sample Address Only', 'George Wilson', '09123459879', 'supplier101@gmail.com', 1, '2021-09-08 09:46:45'),
-(2, 'Supplier 102', '23rd St, Sample City, Test Province, ####', 'Samantha Lou', '09332145889', 'sLou@supplier102.com', 1, '2021-09-08 10:25:12');
+(1, 'Supplier 1', 'Quezon City', 'Juan Dela Cruz', '09912345678', 'juandelacruz@gmail.com', 1, '2025-02-16 21:39:56'),
+(2, 'Supplier 2', 'Camp Crame', 'Mario Santos', '0999912345', 'mariosantos@gmail.com', 1, '2025-02-16 21:41:10');
 
 -- --------------------------------------------------------
 
@@ -203,14 +202,14 @@ CREATE TABLE `system_info` (
 --
 
 INSERT INTO `system_info` (`id`, `meta_field`, `meta_value`) VALUES
-(1, 'name', 'Purchase Order Management System'),
-(6, 'short_name', 'POMS'),
-(11, 'logo', 'uploads/1631064180_sample_compaby_logo.jpg'),
+(1, 'name', 'AGF Purchase Management'),
+(6, 'short_name', 'AGF Purchase Management'),
+(11, 'logo', 'uploads/1739714280_images.png'),
 (13, 'user_avatar', 'uploads/user_avatar.jpg'),
-(14, 'cover', 'uploads/1631064360_sample_bg.jpg'),
-(15, 'company_name', 'Araneta Sales'),
-(16, 'company_email', 'AranetaSales@araneta.com'),
-(17, 'company_address', 'Pily St. San Marcos, Dumaguete City');
+(14, 'cover', 'uploads/1740011280_475811084_1864790847391042_4147509902257776891_n.jpg'),
+(15, 'company_name', 'AGF Security Agency '),
+(16, 'company_email', 'admin@agfsecurity.ph'),
+(17, 'company_address', 'AGF Security Agency Corporation\r\nUnit 517 5/F PSMBFI Bldg. Santolan Road cor.1st & 2nd Sts. West Crame, San Juan, Philippines');
 
 -- --------------------------------------------------------
 
@@ -236,13 +235,26 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `firstname`, `lastname`, `username`, `password`, `avatar`, `last_login`, `type`, `date_added`, `date_updated`) VALUES
-(1, 'Adminstrator', 'Admin', 'admin', '0192023a7bbd73250516f069df18b500', 'uploads/1624240500_avatar.png', NULL, 1, '2021-01-20 14:02:37', '2021-06-21 09:55:07'),
+(1, 'Adminstrator', 'Admin', 'admin', '0192023a7bbd73250516f069df18b500', 'uploads/1624240500_avatar.png', NULL, 1, '2021-01-20 14:02:37', '2025-02-25 17:06:18'),
 (3, 'Mike ', 'Williams', 'mwilliams', 'a88df23ac492e6e2782df6586a0c645f', 'uploads/1630999200_avatar5.png', NULL, 2, '2021-09-07 15:20:40', NULL),
-(5, 'Justin', 'Guiriba', 'sheen', 'e10adc3949ba59abbe56e057f20f883e', 'uploads/1738927560_panipuri.jpg', NULL, 1, '2025-02-07 19:26:36', NULL);
+(6, 'Allainah Shane', 'Esperta', 'shane_esperta', 'b717415eb5e699e4989ef3e2c4e9cbf7', 'uploads/1739841060_c8d7f83a-5c9d-4c58-b400-7df8715a9fd9.jpg', NULL, 2, '2025-02-18 09:11:18', NULL),
+(9, 'sheen', 'Guiriba', 'sheen', '202cb962ac59075b964b07152d234b70', 'uploads/1740473100_panipuri.jpg', NULL, 3, '2025-02-25 16:45:12', NULL);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `approved`
+--
+ALTER TABLE `approved`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `detachment`
+--
+ALTER TABLE `detachment`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `inventory`
@@ -302,16 +314,28 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `approved`
+--
+ALTER TABLE `approved`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `detachment`
+--
+ALTER TABLE `detachment`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `item_list`
 --
 ALTER TABLE `item_list`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `po_list`
@@ -323,13 +347,13 @@ ALTER TABLE `po_list`
 -- AUTO_INCREMENT for table `purchase_list`
 --
 ALTER TABLE `purchase_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `supplier_list`
 --
 ALTER TABLE `supplier_list`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `system_info`
@@ -341,7 +365,7 @@ ALTER TABLE `system_info`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
