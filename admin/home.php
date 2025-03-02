@@ -47,7 +47,7 @@
                 <span class="info-box-text">Request Purchase Approved</span>
                 <span class="info-box-number">
                   <?php 
-                     $po_appoved = $conn->query("SELECT * FROM po_list where `status` =1 ")->num_rows;
+                     $po_appoved = $conn->query("SELECT * FROM purchase_list where `status` =1 ")->num_rows;
                      echo number_format($po_appoved);
                   ?>
                 </span>
@@ -66,7 +66,7 @@
                 <span class="info-box-text">Request Purchase Denied</span>
                 <span class="info-box-number">
                   <?php 
-                     $po = $conn->query("SELECT * FROM po_list where `status` =2 ")->num_rows;
+                     $po = $conn->query("SELECT * FROM purchase_list where `status` =2 ")->num_rows;
                      echo number_format($po);
                   ?>
                 </span>
