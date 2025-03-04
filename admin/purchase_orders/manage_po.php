@@ -462,7 +462,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
                     // Insert into approved table
                     $insert_query = "INSERT INTO approved (item_name, reference, total_price, stock, payment_term, payment_type, unit_measurement) 
-                                    VALUES ('$item_name', '$reference_number', '$total_amount', '$quantity', 'payment_term', 'payment_type', 'unit_meas')";
+                                    VALUES ('$item_name', '$reference_number', '$total_amount', '$quantity', '$payment_term', '$payment_type', '$unit_meas')";
                     if ($conn->query($insert_query)) {
                         $reference_id = $conn->insert_id;
     
