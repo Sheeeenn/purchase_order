@@ -113,8 +113,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 						</colgroup>
 						<thead>
 							<tr class="bg-navy disabled">
-								<th class="px-1 py-1 text-center">Item</th>
 								<th class="px-1 py-1 text-center">Item Code</th>
+								<th class="px-1 py-1 text-center">Item Name</th>
 								<th class="px-1 py-1 text-center">Req Name</th>
                                 <th class="px-1 py-1 text-center">Cost Center</th>
 								<th class="px-1 py-1 text-center">Detachment</th>
@@ -152,25 +152,32 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 
                         foreach ($order_items as $row): ?>
                             <tr class="po-item" data-id="">
+
+                            <?php 
+                                $selected_item = "Select an Item";
+                                $selected_item_id = $row['item_id'] ?? '';
+                                $selected_code = '';
+                                $selected_unit_price = 0;
+
+                                if (!empty($selected_item_id)) {
+                                    $item_qry = $conn->query("SELECT * FROM item_list WHERE id = '{$selected_item_id}'");
+                                    if ($item_qry->num_rows > 0) {
+                                        $item = $item_qry->fetch_array();
+                                        $selected_item = $item['name'];
+                                        $selected_code = $item['code'];
+                                        $selected_unit_price = $item['unit_price'];
+                                    }
+                                }
+                            ?>
+
+                            <td class="align-middle p-0 text-center">
+                                <input type="text" class="text-center w-100 border-0" id="code" name="code" 
+                                    value="<?php echo htmlspecialchars($selected_code); ?>" readonly />
+                            </td>
+
                             <td class="align-middle p-1">
                                 <select name="item_id" id="item_id" class="custom-select custom-select-sm rounded-0 select2" onchange="updateItemDetails()">
-                                    <?php 
-                                        $selected_item = "Select an Item";
-                                        $selected_item_id = $row['item_id'] ?? '';
-                                        $selected_code = '';
-                                        $selected_unit_price = 0;
-
-                                        if (!empty($selected_item_id)) {
-                                            $item_qry = $conn->query("SELECT * FROM item_list WHERE id = '{$selected_item_id}'");
-                                            if ($item_qry->num_rows > 0) {
-                                                $item = $item_qry->fetch_array();
-                                                $selected_item = $item['name'];
-                                                $selected_code = $item['code'];
-                                                $selected_unit_price = $item['unit_price'];
-                                            }
-                                        }
-                                    ?>
-                                    
+                                   
                                     <option value="<?php echo htmlspecialchars($selected_item_id); ?>" 
                                             data-code="<?php echo htmlspecialchars($selected_code); ?>" 
                                             data-unit-price="<?php echo htmlspecialchars($selected_unit_price); ?>" 
@@ -189,11 +196,6 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                     </option>
                                     <?php endwhile; ?>
                                 </select>
-                            </td>
-
-                            <td class="align-middle p-0 text-center">
-                                <input type="text" class="text-center w-100 border-0" id="code" name="code" 
-                                    value="<?php echo htmlspecialchars($selected_code); ?>" readonly />
                             </td>
 
                             <td class="align-middle p-1">
