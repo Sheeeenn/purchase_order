@@ -66,12 +66,35 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                     </option>
                     <?php endwhile; ?>
                 </select>
-
+                
+                <label for="supplier_id">Payment Term</label>
+                <select name="payment_term" id="payment_term" class="custom-select custom-select-sm rounded-0">
+                    <?php 
+                        $selected_payment_term = $row['payment_term'] ?? 30;
+                    ?>
+                    <option value="30" <?php echo ($selected_payment_term == 30) ? "selected" : ""; ?>>30</option>
+                    <option value="60" <?php echo ($selected_payment_term == 60) ? "selected" : ""; ?>>60</option>
+                    <option value="90" <?php echo ($selected_payment_term == 90) ? "selected" : ""; ?>>90</option>
+                    <option value="120" <?php echo ($selected_payment_term == 120) ? "selected" : ""; ?>>120</option>
+                </select>
 
 				</div>
 				<div class="col-6">
-                    <p  class="m-0"><b>Reference #:</b></p>
-                    <p style="font-size: 22px;"><b><?php echo isset($reference_id) ? $reference_id : "REF-000000000"?></b></p>
+                <?php if (!empty($reference_id)) : ?>
+                    <p class="m-0"><b>Reference #:</b></p>
+                    <p style="font-size: 15px;"><b><?php echo htmlspecialchars($reference_id); ?></b></p>
+                <?php endif; ?>
+
+
+                    <label for="supplier_id">Payment Type</label>
+                    <select name="payment_type" id="payment_type" class="custom-select custom-select-sm rounded-0">
+                        <?php 
+                            $selected_payment_type = $row['payment_type'] ?? "CASH";
+                        ?>
+                        <option value="CASH" <?php echo ($selected_payment_type == "CASH") ? "selected" : ""; ?>>CASH</option>
+                        <option value="CBC" <?php echo ($selected_payment_type == "CBC") ? "selected" : ""; ?>>CBC</option>
+                        <option value="PBC" <?php echo ($selected_payment_type == "PBC") ? "selected" : ""; ?>>PBC</option>
+                    </select>
                 </div>
 			</div>
 			<div class="row">
@@ -81,8 +104,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
-                            <col width="10%">
-                            <col width="10%">
+                            <col width="20%">
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
@@ -94,10 +116,9 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 								<th class="px-1 py-1 text-center">Item</th>
 								<th class="px-1 py-1 text-center">Item Code</th>
 								<th class="px-1 py-1 text-center">Req Name</th>
+                                <th class="px-1 py-1 text-center">Cost Center</th>
 								<th class="px-1 py-1 text-center">Detachment</th>
                                 <th class="px-1 py-1 text-center">Category</th>
-                                <th class="px-1 py-1 text-center">Payment Terms</th>
-                                <th class="px-1 py-1 text-center">Payment Type</th>
                                 <th class="px-1 py-1 text-center">Unit Of Measurement</th>
 								<th class="px-1 py-1 text-center">Quantity</th>
 								<th class="px-1 py-1 text-center">Total</th>
@@ -179,6 +200,22 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                 <input type="text" class="text-center w-100 border-0" name="requestor_name" value="<?php echo htmlspecialchars($row['requestor_name']) ?>"/>
                             </td>
 
+                            <td class="align-middle p-0 text-center">
+                                <select name="cost_center" id="cost_center" class="custom-select custom-select-sm rounded-0">
+                                    <?php 
+                                        $selected_category = $row['cost_center'] ?? 'Finance';
+                                    ?>
+                                    <option value="Finance" <?php echo ($selected_category == "Finance") ? "selected" : ""; ?>>Finance</option>
+                                    <option value="HR & Admin" <?php echo ($selected_category == "HR & Admin") ? "selected" : ""; ?>>HR & Admin</option>
+                                    <option value="Sales & Marketing" <?php echo ($selected_category == "Sales & Marketing") ? "selected" : ""; ?>>Sales & Marketing</option>
+                                    <option value="Executive Office" <?php echo ($selected_category == "Executive Office") ? "selected" : ""; ?>>Executive Office</option>
+                                    <option value="General" <?php echo ($selected_category == "General") ? "selected" : ""; ?>>General</option>
+                                    <option value="Supply Chain" <?php echo ($selected_category == "Supply Chain") ? "selected" : ""; ?>>Supply Chain</option>
+                                    <option value="Ops. Excellence" <?php echo ($selected_category == "Ops. Excellence") ? "selected" : ""; ?>>Ops. Excellence</option>
+                                    <option value="Operations" <?php echo ($selected_category == "Operations") ? "selected" : ""; ?>>Operations</option>
+                                </select>
+                            </td>
+
                             <td class="align-middle p-1">
                                 <select name="detachment" id="detachment" class="custom-select custom-select-sm rounded-0 select2">
                                     <?php 
@@ -212,29 +249,6 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                     ?>
                                     <option value="General" <?php echo ($selected_category == "General") ? "selected" : ""; ?>>General</option>
                                     <option value="Office" <?php echo ($selected_category == "Office") ? "selected" : ""; ?>>Office</option>
-                                </select>
-                            </td>
-
-                            <td class="align-middle p-0 text-center">
-                                <select name="payment_term" id="payment_term" class="custom-select custom-select-sm rounded-0">
-                                    <?php 
-                                        $selected_payment_term = $row['payment_term'] ?? 30;
-                                    ?>
-                                    <option value="30" <?php echo ($selected_payment_term == 30) ? "selected" : ""; ?>>30</option>
-                                    <option value="60" <?php echo ($selected_payment_term == 60) ? "selected" : ""; ?>>60</option>
-                                    <option value="90" <?php echo ($selected_payment_term == 90) ? "selected" : ""; ?>>90</option>
-                                    <option value="120" <?php echo ($selected_payment_term == 120) ? "selected" : ""; ?>>120</option>
-                                </select>
-                            </td>
-
-                            <td class="align-middle p-0 text-center">
-                                <select name="payment_type" id="payment_type" class="custom-select custom-select-sm rounded-0">
-                                    <?php 
-                                        $selected_payment_type = $row['payment_type'] ?? "CASH";
-                                    ?>
-                                    <option value="CASH" <?php echo ($selected_payment_type == "CASH") ? "selected" : ""; ?>>CASH</option>
-                                    <option value="CBC" <?php echo ($selected_payment_type == "CBC") ? "selected" : ""; ?>>CBC</option>
-                                    <option value="PBC" <?php echo ($selected_payment_type == "PBC") ? "selected" : ""; ?>>PBC</option>
                                 </select>
                             </td>
 
@@ -291,23 +305,23 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 						<tfoot>
 							<tr class="bg-lightblue">
                                 <tr>
-                                    <th class="p-1 text-right" colspan="9">Sub Total</th>
+                                    <th class="p-1 text-right" colspan="8">Sub Total</th>
                                     <th class="p-1 text-right" id="sub_total"><?php echo isset($sub_total) ? number_format($sub_total) : 0 ?></th>
                                 </tr>
 								<tr>
-									<th class="p-1 text-right" colspan="9">Discount (%)
+									<th class="p-1 text-right" colspan="8">Discount (%)
 									<input type="number" step="any" name="discount_percentage" class="border-light text-right" value="<?php echo isset($discount_percentage) ? $discount_percentage : 0 ?>">
 									</th>
 									<th class="p-1"><input type="text" class="w-100 border-0 text-right" readonly value="<?php echo isset($discount_amount) ? $discount_amount : 0 ?>" name="discount_amount"></th>
 								</tr>
 								<tr>
-									<th class="p-1 text-right" colspan="9">Tax Inclusive (%)
+									<th class="p-1 text-right" colspan="8">Tax Inclusive (%)
 									<input type="number" step="any" name="tax_percentage" class="border-light text-right" value="<?php echo isset($tax_percentage) ? $tax_percentage : 0 ?>">
 									</th>
 									<th class="p-1"><input type="text" class="w-100 border-0 text-right" readonly value="<?php echo isset($tax_amount) ? $tax_amount : 0 ?>" name="tax_amount"></th>
 								</tr>
 								<tr>
-                                <th class="p-1 text-right" colspan="9">Total</th>
+                                <th class="p-1 text-right" colspan="8">Total</th>
                                 <th class="p-1 text-right"> <input  name="total_amount" id="total" type="text" class="w-100 border-0 text-right" readonly value="<?php echo isset($tax_amount) ? number_format($sub_total - $discount_amount) : 0 ?>"></th>
                             </tr>
 							</tr>
@@ -393,6 +407,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //$date_purchase = isset($_POST['date_purchase']) ? $_POST['date_purchase'] : null;
     //$date_received = isset($_POST['date_recieved']) ? $_POST['date_recieved'] : null;
     $notes = isset($_POST['notes']) ? $_POST['notes'] : '';
+    $cost_center = isset($_POST['cost_center']) ? $_POST['cost_center'] : "Finance";
     $detachment = isset($_POST['detachment']) ? $_POST['detachment'] : 1;
 
     $category = isset($_POST['category']) ? $_POST['category'] : "General";
@@ -420,6 +435,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             discount_amount = '$discount_amount',
             tax_percentage = '$tax_percentage',
             tax_amount = '$tax_amount',
+            cost_center = '$cost_center',
             detachment = '$detachment',
             category = '$category',
             payment_term = '$payment_term',
@@ -491,6 +507,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         discount_amount, 
         tax_percentage, 
         tax_amount, 
+        cost_center,
         detachment,
         category,
         payment_term, 
@@ -510,6 +527,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         '$discount_amount', 
         '$tax_percentage', 
         '$tax_amount', 
+        '$cost_center',
         '$detachment',
         '$category',
         '$payment_term', 
