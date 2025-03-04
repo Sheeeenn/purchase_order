@@ -39,10 +39,10 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
             <label for="code" class="control-label">Category</label>
             <select name="category" id="category" class="custom-select custom-select-sm rounded-0">
                 <?php 
-                    //$selected_category = $row['category'] ?? 'General';
+                    $selected_category = $category ? $category : '';
                 ?>
-                <option value="General" <?php echo ($category == "General") ? "selected" : ""; ?>>General</option>
-                <option value="Office" <?php echo ($category == "Office") ? "selected" : ""; ?>>Office</option>
+                <option value="General" <?php echo ($selected_category == "General") ? "selected" : ""; ?>>General</option>
+                <option value="Office" <?php echo ($selected_category == "Office") ? "selected" : ""; ?>>Office</option>
             </select>
         </div>
         
