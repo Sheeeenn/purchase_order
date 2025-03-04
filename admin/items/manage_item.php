@@ -34,6 +34,18 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 value="<?php echo isset($code) ? htmlspecialchars($code) : ''; ?>" 
                 disabled required>
         </div>
+
+        <div class="form-group">
+            <label for="code" class="control-label">Category</label>
+            <select name="category" id="category" class="custom-select custom-select-sm rounded-0">
+                <?php 
+                    //$selected_category = $row['category'] ?? 'General';
+                ?>
+                <option value="General" <?php echo ($category == "General") ? "selected" : ""; ?>>General</option>
+                <option value="Office" <?php echo ($category == "Office") ? "selected" : ""; ?>>Office</option>
+            </select>
+        </div>
+        
         <div class="form-group">
             <label for="description" class="control-label">Description</label>
             <textarea rows="3" name="description" id="description" class="form-control rounded-0" required><?php echo isset($description) ? $description :"" ?></textarea>
@@ -65,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $code = "POR-" . $range;
 
     $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $category = mysqli_real_escape_string($conn, $_POST['category']);
     //$code = mysqli_real_escape_string($conn, $_POST['code']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
     $unit_price = floatval(str_replace(',', '', $_POST['unit'])); // Ensure correct number format
@@ -73,13 +86,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($id) {
         // Update existing record
-        $sql = "UPDATE item_list SET name='$name', description='$description', unit_price='$unit_price', status='$status' WHERE id='$id'";
+        $sql = "UPDATE item_list SET name='$name', category='$category', description='$description', unit_price='$unit_price', status='$status' WHERE id='$id'";
         if ($conn->query($sql)) {
             echo "<script>window.location.href='?page=items';</script>";
         }
     } else {
         // Insert new record into item_list
-        $sql = "INSERT INTO item_list (name, code, description, unit_price, status) VALUES ('$name', '$code', '$description', '$unit_price', '$status')";
+        $sql = "INSERT INTO item_list (name, code, category, description, unit_price, status) VALUES ('$name', '$code', '$category', '$description', '$unit_price', '$status')";
         if ($conn->query($sql)) {
             // Get the last inserted ID
             $item_id = $conn->insert_id;

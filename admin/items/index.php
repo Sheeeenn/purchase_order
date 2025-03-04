@@ -16,11 +16,12 @@
 			<table class="table table-hover table-striped">
 				<colgroup>
 					<col width="5%">
+					<col width="10%">
+                    <col width="10%">
 					<col width="15%">
                     <col width="10%">
 					<col width="15%">
-					<col width="15%">
-					<col width="15%">
+					<col width="10%">
                     <col width="10%">
 					<col width="15%">
 				</colgroup>
@@ -30,6 +31,7 @@
 						<th class="text-center">Date Created</th>
 						<th class="text-center">Item Name</th>
                         <th class="text-center">Item Code</th>
+                        <th class="text-center">Category</th>
 						<th class="text-center">Description</th>
                         <th class="text-center">Unit Price</th>
 						<th class="text-center">Status</th>
@@ -48,6 +50,7 @@
 							<td class="text-center"><?php echo date("Y-m-d H:i",strtotime($row['date_created'])) ?></td>
 							<td class="text-center"><?php echo $row['name'] ?></td>
                             <td class="text-center"><?php echo $row['code'] ?></td>
+                            <td class="text-center"><?php echo $row['category'] ?></td>
 							<td class='truncate-3 text-center' title="<?php echo $row['description'] ?>"><?php echo $row['description'] ?></td>
                             <td class="text-center"><?php echo number_format($row['unit_price']) ?></td>
 							<td class="text-center">
