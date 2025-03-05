@@ -104,7 +104,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
-                            <col width="20%">
+                            <col width="10%">
+                            <col width="10%">
                             <col width="10%">
                             <col width="10%">
                             <col width="10%">
@@ -121,6 +122,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                 <th class="px-1 py-1 text-center">Category</th>
                                 <th class="px-1 py-1 text-center">Unit Of Measurement</th>
 								<th class="px-1 py-1 text-center">Quantity</th>
+                                <th class="px-1 py-1 text-center">Unit Price</th>
 								<th class="px-1 py-1 text-center">Total</th>
 							</tr>
 						</thead>
@@ -269,7 +271,7 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                     value="<?php echo htmlspecialchars($row['quantity']); ?>" oninput="calculateTotal()" />
                             </td>
 
-                            <td class="align-middle p-1" style="display: none;">
+                            <td class="align-middle p-1" style="">
                                 <input type="number" step="any" class="text-right w-100 border-0" name="amount_requested" id="amount_requested" 
                                     value="<?php echo htmlspecialchars($selected_unit_price); ?>" readonly />
                             </td>
