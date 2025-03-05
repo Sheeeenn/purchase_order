@@ -41,8 +41,13 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 <?php 
                     $selected_category = $category ? $category : '';
                 ?>
-                <option value="General" <?php echo ($selected_category == "General") ? "selected" : ""; ?>>General</option>
-                <option value="Office" <?php echo ($selected_category == "Office") ? "selected" : ""; ?>>Office</option>
+                <option value="Office Supply" <?php echo ($selected_category == "Office Supply") ? "selected" : ""; ?>>Office Supply</option>
+                <option value="PPE" <?php echo ($selected_category == "PPE") ? "selected" : ""; ?>>PPE</option>
+                <option value="Furniture" <?php echo ($selected_category == "Furniture") ? "selected" : ""; ?>>Furniture</option>
+                <option value="Equipment" <?php echo ($selected_category == "Equipment") ? "selected" : ""; ?>>Equipment</option>
+                <option value="Service" <?php echo ($selected_category == "Service") ? "selected" : ""; ?>>Service</option>
+                <option value="Others" <?php echo ($selected_category == "Others") ? "selected" : ""; ?>>Others</option>
+
             </select>
         </div>
         
@@ -72,12 +77,28 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    // Generate a unique reference ID
-    $range = mt_rand(100000, 999999);
-    $code = "POR-" . $range;
+    $category = mysqli_real_escape_string($conn, $_POST['category']);
+
+    // Generate a unique number
+    $range = mt_rand(10000, 99999); // Adjust the number range as needed
+
+    // Define category prefixes
+    $prefixes = [
+        "Office Supply" => "OFC",
+        "PPE" => "PPE",
+        "Furniture" => "FUR",
+        "Equipment" => "EQU",
+        "Service" => "SER",
+        "Others" => "OTH"
+    ];
+
+    // Set default prefix in case category is not found
+    $prefix = isset($prefixes[$category]) ? $prefixes[$category] : "OTH"; 
+
+    // Generate final reference code
+    $code = $prefix . "-" . $range;
 
     $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $category = mysqli_real_escape_string($conn, $_POST['category']);
     //$code = mysqli_real_escape_string($conn, $_POST['code']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
     $unit_price = floatval(str_replace(',', '', $_POST['unit'])); // Ensure correct number format
