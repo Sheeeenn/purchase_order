@@ -223,8 +223,8 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                             <td class="align-middle p-1">
                                 <select name="detachment" id="detachment" class="custom-select custom-select-sm rounded-0 select2">
                                     <?php 
-                                        $selected_detachment = "Select an Detachment";
                                         $selected_detachment_id = $row['detachment'] ?? '';
+                                        $selected_detachment = "N/A";
 
                                         if (!empty($selected_detachment_id)) {
                                             $detachment_qry = $conn->query("SELECT * FROM detachment WHERE id = '{$selected_detachment_id}'");
@@ -245,6 +245,26 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                                     <?php endwhile; ?>
                                 </select>
                             </td>
+
+                            <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                let costCenter = document.getElementById("cost_center");
+                                let detachment = document.getElementById("detachment");
+
+                                function toggleDetachment() {
+                                    if (costCenter.value === "Operations") {
+                                        detachment.disabled = false;
+                                    } else {
+                                        detachment.disabled = true;
+                                        detachment.innerHTML = '<option value="">N/A</option>'; // Reset to N/A when disabled
+                                    }
+                                }
+
+                                costCenter.addEventListener("change", toggleDetachment);
+                                toggleDetachment(); // Run once on page load
+                            });
+                            </script>
+
 
                             <td class="align-middle p-0 text-center">
                                 <select name="category" id="category" class="custom-select custom-select-sm rounded-0">
